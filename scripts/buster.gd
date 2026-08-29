@@ -155,18 +155,18 @@ func _apply_charge_particles(level: int) -> void:
 
 	match level:
 		1:
-			# Right Buster (Cannon box emitter)
-			_set_particle_system(right_particles, true, Color(1.0, 0.95, 0.2), 0.035, 24, true)
+			# Right Buster (Cannon box emitter - compact crisp sparks)
+			_set_particle_system(right_particles, true, Color(1.0, 0.95, 0.2), 0.016, 20, true)
 			# Left Glove (Hand sphere emitter)
-			_set_particle_system(left_particles, true, Color(1.0, 0.95, 0.2), 0.025, 12, false)
+			_set_particle_system(left_particles, true, Color(1.0, 0.95, 0.2), 0.018, 12, false)
 		2:
 			# Level 2 Green Flashing Aura
-			_set_particle_system(right_particles, true, Color(0.2, 1.0, 0.45), 0.055, 45, true)
-			_set_particle_system(left_particles, true, Color(0.2, 1.0, 0.45), 0.040, 20, false)
+			_set_particle_system(right_particles, true, Color(0.2, 1.0, 0.45), 0.026, 35, true)
+			_set_particle_system(left_particles, true, Color(0.2, 1.0, 0.45), 0.030, 18, false)
 		3:
-			# Level 3 Blue Plasma Storm
-			_set_particle_system(right_particles, true, Color(0.15, 0.75, 1.0), 0.080, 68, true)
-			_set_particle_system(left_particles, true, Color(0.15, 0.75, 1.0), 0.055, 30, false)
+			# Level 3 Blue Plasma Sparks
+			_set_particle_system(right_particles, true, Color(0.15, 0.75, 1.0), 0.038, 50, true)
+			_set_particle_system(left_particles, true, Color(0.15, 0.75, 1.0), 0.042, 26, false)
 
 func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: float, p_amount: int, is_cannon: bool) -> void:
 	if not p:
@@ -179,19 +179,18 @@ func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: 
 
 	p.visible = true
 	p.amount = p_amount
-	p.lifetime = 0.11
+	# Snappier, shorter lifetime: quick electric sizzle
+	p.lifetime = 0.07
 	
 	var p_mat := ParticleProcessMaterial.new()
 	if is_cannon:
-		# Box emission covering the entire X-Buster cylindrical barrel
 		p_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-		p_mat.emission_box_extents = Vector3(0.09, 0.09, 0.13)
-		p_mat.initial_velocity_min = 0.3
-		p_mat.initial_velocity_max = 0.8
+		p_mat.emission_box_extents = Vector3(0.085, 0.085, 0.12)
+		p_mat.initial_velocity_min = 0.2
+		p_mat.initial_velocity_max = 0.6
 	else:
-		# Compact sphere emission tightly hugging the left glove
 		p_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-		p_mat.emission_sphere_radius = 0.05
+		p_mat.emission_sphere_radius = 0.045
 		p_mat.initial_velocity_min = 0.2
 		p_mat.initial_velocity_max = 0.5
 

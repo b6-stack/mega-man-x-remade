@@ -14,7 +14,7 @@ albedo_color = Color(0.04, 0.22, 0.65, 1)
 
 [sub_resource type="PrismMesh" id="PrismMesh_center_crest"]
 material = SubResource("StandardMaterial3D_helmet_blue")
-size = Vector3(0.065, 0.055, 0.035)
+size = Vector3(0.055, 0.045, 0.025)
 
 [sub_resource type="BoxMesh" id="BoxMesh_canopy_top"]
 material = SubResource("StandardMaterial3D_helmet_blue")
@@ -35,7 +35,7 @@ albedo_color = Color(0.85, 0.75, 0.2, 1)
 
 [sub_resource type="PrismMesh" id="PrismMesh_gem_bezel"]
 material = SubResource("StandardMaterial3D_jewel_bezel")
-size = Vector3(0.032, 0.036, 0.018)
+size = Vector3(0.030, 0.032, 0.010)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jewel"]
 shading_mode = 0
@@ -47,7 +47,7 @@ emission_energy_multiplier = 6.0
 
 [sub_resource type="PrismMesh" id="PrismMesh_jewel"]
 material = SubResource("StandardMaterial3D_jewel")
-size = Vector3(0.024, 0.028, 0.022)
+size = Vector3(0.024, 0.026, 0.012)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_armor_cyan"]
 albedo_color = Color(0, 0.65, 0.95, 1)
@@ -116,7 +116,7 @@ size = Vector3(0.006, 0.0065, 0.012)
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_charge"]
 emission_shape = 1
-emission_sphere_radius = 0.05
+emission_sphere_radius = 0.045
 gravity = Vector3(0, 0, 0)
 initial_velocity_min = 0.2
 initial_velocity_max = 0.5
@@ -130,8 +130,8 @@ emission_energy_multiplier = 6.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_sparkle"]
 material = SubResource("StandardMaterial3D_sparkle")
-radius = 0.020
-height = 0.040
+radius = 0.015
+height = 0.030
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_buster_rear_swell"]
 material = SubResource("StandardMaterial3D_armor_cyan")
@@ -196,42 +196,42 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 [node name="HelmetVisorFrame" type="Node3D" parent="XROrigin3D/XRCamera3D"]
 
 [node name="ForeheadCanopy" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
-transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0.088, -0.155)
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0.075, -0.160)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_canopy_top")
 
 [node name="CenterCrest" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
-transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.034, -0.155)
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.020, -0.160)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_center_crest")
 
 [node name="ForeheadGemBezel" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
-transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.034, -0.153)
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.020, -0.157)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_gem_bezel")
 
 [node name="ForeheadGem" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
-transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.034, -0.150)
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.020, -0.155)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_jewel")
 
 [node name="BrowArchLeft" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
-transform = Transform3D(0.978148, 0.198669, 0.0634125, -0.207912, 0.935408, 0.285627, 0.00258189, -0.292671, 0.956209, -0.090, 0.048, -0.155)
+transform = Transform3D(0.978148, 0.198669, 0.0634125, -0.207912, 0.935408, 0.285627, 0.00258189, -0.292671, 0.956209, -0.090, 0.034, -0.158)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_brow_arch")
 
 [node name="BrowArchRight" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
-transform = Transform3D(0.978148, -0.198669, -0.0634125, 0.207912, 0.935408, 0.285627, -0.00258189, -0.292671, 0.956209, 0.090, 0.048, -0.155)
+transform = Transform3D(0.978148, -0.198669, -0.0634125, 0.207912, 0.935408, 0.285627, -0.00258189, -0.292671, 0.956209, 0.090, 0.034, -0.158)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_brow_arch")
 
 [node name="TempleLeft" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
-transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -0.180, 0.0, -0.150)
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -0.180, -0.005, -0.155)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_temple_side")
 
 [node name="TempleRight" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
-transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 0.180, 0.0, -0.150)
+transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 0.180, -0.005, -0.155)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_temple_side")
 
@@ -245,8 +245,8 @@ transform = Transform3D(0.000796327, -0.978148, -0.207912, 1, 0.000778931, 0.000
 [node name="LeftChargeParticles" type="GPUParticles3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.02)
 emitting = false
-amount = 20
-lifetime = 0.11
+amount = 18
+lifetime = 0.07
 process_material = SubResource("ParticleProcessMaterial_charge")
 draw_pass_1 = SubResource("SphereMesh_sparkle")
 
@@ -348,8 +348,8 @@ script = ExtResource("2_buster")
 [node name="RightChargeParticles" type="GPUParticles3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.04)
 emitting = false
-amount = 45
-lifetime = 0.11
+amount = 35
+lifetime = 0.07
 process_material = SubResource("ParticleProcessMaterial_charge")
 draw_pass_1 = SubResource("SphereMesh_sparkle")
 
