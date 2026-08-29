@@ -1,0 +1,134 @@
+[gd_scene load_steps=18 format=3 uid="uid://bvxk9p10qleja"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/buster.gd" id="2_buster"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jewel"]
+shading_mode = 0
+albedo_color = Color(1, 0.08, 0.15, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.1, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="PrismMesh" id="PrismMesh_jewel"]
+material = SubResource("StandardMaterial3D_jewel")
+size = Vector3(0.04, 0.05, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_armor_cyan"]
+albedo_color = Color(0, 0.65, 0.95, 1)
+metallic = 0.4
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_armor_blue"]
+albedo_color = Color(0.05, 0.2, 0.6, 1)
+metallic = 0.5
+roughness = 0.4
+
+[sub_resource type="BoxMesh" id="BoxMesh_left_gauntlet"]
+material = SubResource("StandardMaterial3D_armor_cyan")
+size = Vector3(0.09, 0.09, 0.2)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_left_wrist"]
+material = SubResource("StandardMaterial3D_armor_blue")
+top_radius = 0.055
+bottom_radius = 0.055
+height = 0.06
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_barrel_dark"]
+albedo_color = Color(0.12, 0.12, 0.15, 1)
+metallic = 0.8
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yellow_ring"]
+albedo_color = Color(1, 0.85, 0.1, 1)
+emission_enabled = true
+emission = Color(1, 0.8, 0, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_buster_body"]
+material = SubResource("StandardMaterial3D_armor_cyan")
+top_radius = 0.065
+bottom_radius = 0.075
+height = 0.32
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_buster_muzzle"]
+material = SubResource("StandardMaterial3D_barrel_dark")
+top_radius = 0.055
+bottom_radius = 0.06
+height = 0.08
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_buster_ring"]
+material = SubResource("StandardMaterial3D_yellow_ring")
+top_radius = 0.068
+bottom_radius = 0.068
+height = 0.03
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_charge_glow"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.95, 0.2, 0.6)
+
+[sub_resource type="SphereMesh" id="SphereMesh_charge_glow"]
+material = SubResource("StandardMaterial3D_charge_glow")
+radius = 0.1
+height = 0.2
+
+[node name="VRPlayer" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="HelmetJewel" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.12, -0.25)
+mesh = SubResource("PrismMesh_jewel")
+
+[node name="LeftController" type="XRController3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 1.2, -0.35)
+tracker = &"left_hand"
+
+[node name="GauntletMesh" type="MeshInstance3D" parent="XROrigin3D/LeftController"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
+mesh = SubResource("BoxMesh_left_gauntlet")
+
+[node name="WristMesh" type="MeshInstance3D" parent="XROrigin3D/LeftController"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.06)
+mesh = SubResource("CylinderMesh_left_wrist")
+
+[node name="RightController" type="XRController3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.2, -0.35)
+tracker = &"right_hand"
+
+[node name="XBuster" type="Node3D" parent="XROrigin3D/RightController"]
+script = ExtResource("2_buster")
+
+[node name="BusterBody" type="MeshInstance3D" parent="XROrigin3D/RightController/XBuster"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.06)
+mesh = SubResource("CylinderMesh_buster_body")
+
+[node name="BusterRing" type="MeshInstance3D" parent="XROrigin3D/RightController/XBuster"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0.05)
+mesh = SubResource("CylinderMesh_buster_ring")
+
+[node name="BusterMuzzle" type="MeshInstance3D" parent="XROrigin3D/RightController/XBuster"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.23)
+mesh = SubResource("CylinderMesh_buster_muzzle")
+
+[node name="Muzzle" type="Marker3D" parent="XROrigin3D/RightController/XBuster"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
+
+[node name="ChargeGlow" type="MeshInstance3D" parent="XROrigin3D/RightController/XBuster/Muzzle"]
+visible = false
+mesh = SubResource("SphereMesh_charge_glow")
