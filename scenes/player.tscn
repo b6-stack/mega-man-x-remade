@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bvxk9p10qleja"]
+[gd_scene load_steps=42 format=3 uid="uid://bvxk9p10qleja"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/buster.gd" id="2_buster"]
@@ -7,41 +7,142 @@
 radius = 0.35
 height = 1.8
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_helmet_blue"]
+albedo_color = Color(0.04, 0.22, 0.65, 1)
+metallic = 0.5
+roughness = 0.35
+
+[sub_resource type="PrismMesh" id="PrismMesh_center_crest"]
+material = SubResource("StandardMaterial3D_helmet_blue")
+size = Vector3(0.08, 0.07, 0.04)
+
+[sub_resource type="BoxMesh" id="BoxMesh_canopy_top"]
+material = SubResource("StandardMaterial3D_helmet_blue")
+size = Vector3(0.42, 0.035, 0.12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_brow_arch"]
+material = SubResource("StandardMaterial3D_helmet_blue")
+size = Vector3(0.16, 0.048, 0.04)
+
+[sub_resource type="BoxMesh" id="BoxMesh_temple_side"]
+material = SubResource("StandardMaterial3D_helmet_blue")
+size = Vector3(0.045, 0.22, 0.065)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jewel_bezel"]
+albedo_color = Color(0.85, 0.75, 0.2, 1)
+metallic = 0.8
+roughness = 0.2
+
+[sub_resource type="PrismMesh" id="PrismMesh_gem_bezel"]
+material = SubResource("StandardMaterial3D_jewel_bezel")
+size = Vector3(0.044, 0.054, 0.016)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jewel"]
 shading_mode = 0
-albedo_color = Color(1, 0.08, 0.15, 1)
+albedo_color = Color(1, 0.05, 0.12, 1)
 emission_enabled = true
 emission = Color(1, 0.05, 0.1, 1)
-emission_energy_multiplier = 4.0
+emission_energy_multiplier = 4.5
 
 [sub_resource type="PrismMesh" id="PrismMesh_jewel"]
 material = SubResource("StandardMaterial3D_jewel")
-size = Vector3(0.04, 0.05, 0.02)
+size = Vector3(0.032, 0.042, 0.02)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_armor_cyan"]
 albedo_color = Color(0, 0.65, 0.95, 1)
 metallic = 0.4
 roughness = 0.3
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_armor_blue"]
-albedo_color = Color(0.05, 0.2, 0.6, 1)
-metallic = 0.5
-roughness = 0.4
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_armor_dark"]
+albedo_color = Color(0.1, 0.1, 0.14, 1)
+metallic = 0.7
+roughness = 0.3
 
-[sub_resource type="BoxMesh" id="BoxMesh_left_gauntlet"]
+[sub_resource type="BoxMesh" id="BoxMesh_gauntlet_compact"]
 material = SubResource("StandardMaterial3D_armor_cyan")
-size = Vector3(0.09, 0.09, 0.2)
+size = Vector3(0.088, 0.088, 0.11)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_left_wrist"]
-material = SubResource("StandardMaterial3D_armor_blue")
-top_radius = 0.055
-bottom_radius = 0.055
-height = 0.06
+[sub_resource type="CylinderMesh" id="CylinderMesh_wrist_cuff"]
+material = SubResource("StandardMaterial3D_armor_dark")
+top_radius = 0.052
+bottom_radius = 0.054
+height = 0.035
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_barrel_dark"]
-albedo_color = Color(0.12, 0.12, 0.15, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_glove_white"]
+albedo_color = Color(0.96, 0.96, 0.98, 1)
+metallic = 0.15
+roughness = 0.3
+
+[sub_resource type="BoxMesh" id="BoxMesh_palm"]
+material = SubResource("StandardMaterial3D_glove_white")
+size = Vector3(0.065, 0.032, 0.055)
+
+[sub_resource type="BoxMesh" id="BoxMesh_finger_proximal"]
+material = SubResource("StandardMaterial3D_glove_white")
+size = Vector3(0.012, 0.012, 0.026)
+
+[sub_resource type="BoxMesh" id="BoxMesh_finger_distal"]
+material = SubResource("StandardMaterial3D_glove_white")
+size = Vector3(0.011, 0.011, 0.022)
+
+[sub_resource type="BoxMesh" id="BoxMesh_thumb_proximal"]
+material = SubResource("StandardMaterial3D_glove_white")
+size = Vector3(0.014, 0.014, 0.025)
+
+[sub_resource type="BoxMesh" id="BoxMesh_thumb_distal"]
+material = SubResource("StandardMaterial3D_glove_white")
+size = Vector3(0.012, 0.012, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gauge_back"]
+albedo_color = Color(0.06, 0.06, 0.08, 1)
 metallic = 0.8
-roughness = 0.2
+roughness = 0.3
+
+[sub_resource type="BoxMesh" id="BoxMesh_gauge_back"]
+material = SubResource("StandardMaterial3D_gauge_back")
+size = Vector3(0.005, 0.058, 0.018)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gauge_yellow"]
+shading_mode = 0
+albedo_color = Color(1, 0.9, 0.08, 1)
+emission_enabled = true
+emission = Color(1, 0.88, 0.05, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_gauge_segment"]
+material = SubResource("StandardMaterial3D_gauge_yellow")
+size = Vector3(0.006, 0.0065, 0.012)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_charge"]
+emission_shape = 1
+emission_sphere_radius = 0.18
+gravity = Vector3(0, 0.2, 0)
+radial_velocity_min = -0.4
+radial_velocity_max = -0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sparkle"]
+shading_mode = 0
+albedo_color = Color(0.2, 1, 0.45, 1)
+emission_enabled = true
+emission = Color(0.2, 1, 0.45, 1)
+emission_energy_multiplier = 5.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_sparkle"]
+material = SubResource("StandardMaterial3D_sparkle")
+radius = 0.018
+height = 0.036
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_buster_rear_swell"]
+material = SubResource("StandardMaterial3D_armor_cyan")
+top_radius = 0.078
+bottom_radius = 0.066
+height = 0.095
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_buster_front_taper"]
+material = SubResource("StandardMaterial3D_armor_cyan")
+top_radius = 0.052
+bottom_radius = 0.078
+height = 0.095
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yellow_ring"]
 albedo_color = Color(1, 0.85, 0.1, 1)
@@ -49,33 +150,50 @@ emission_enabled = true
 emission = Color(1, 0.8, 0, 1)
 emission_energy_multiplier = 2.0
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_buster_body"]
-material = SubResource("StandardMaterial3D_armor_cyan")
-top_radius = 0.065
-bottom_radius = 0.075
-height = 0.32
+[sub_resource type="CylinderMesh" id="CylinderMesh_buster_ring"]
+material = SubResource("StandardMaterial3D_yellow_ring")
+top_radius = 0.079
+bottom_radius = 0.079
+height = 0.018
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_barrel_dark"]
+albedo_color = Color(0.1, 0.1, 0.13, 1)
+metallic = 0.8
+roughness = 0.2
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_buster_muzzle"]
 material = SubResource("StandardMaterial3D_barrel_dark")
-top_radius = 0.055
-bottom_radius = 0.06
-height = 0.08
+top_radius = 0.048
+bottom_radius = 0.053
+height = 0.045
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_buster_ring"]
-material = SubResource("StandardMaterial3D_yellow_ring")
-top_radius = 0.068
-bottom_radius = 0.068
-height = 0.03
+[sub_resource type="CylinderMesh" id="CylinderMesh_muzzle_gem_bezel"]
+material = SubResource("StandardMaterial3D_barrel_dark")
+top_radius = 0.022
+bottom_radius = 0.022
+height = 0.008
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_charge_glow"]
-transparency = 1
+[sub_resource type="SphereMesh" id="SphereMesh_domed_jewel"]
+material = SubResource("StandardMaterial3D_jewel")
+radius = 0.018
+height = 0.016
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_cuff_band"]
+material = SubResource("StandardMaterial3D_barrel_dark")
+top_radius = 0.072
+bottom_radius = 0.072
+height = 0.038
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cuff_gem"]
 shading_mode = 0
-albedo_color = Color(1, 0.95, 0.2, 0.6)
+albedo_color = Color(0.1, 1, 0.6, 1)
+emission_enabled = true
+emission = Color(0.1, 1, 0.5, 1)
+emission_energy_multiplier = 3.5
 
-[sub_resource type="SphereMesh" id="SphereMesh_charge_glow"]
-material = SubResource("StandardMaterial3D_charge_glow")
-radius = 0.1
-height = 0.2
+[sub_resource type="PrismMesh" id="PrismMesh_cuff_gem"]
+material = SubResource("StandardMaterial3D_cuff_gem")
+size = Vector3(0.018, 0.018, 0.01)
 
 [node name="VRPlayer" type="CharacterBody3D"]
 collision_layer = 4
@@ -91,44 +209,189 @@ shape = SubResource("CapsuleShape3D_player")
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 
-[node name="HelmetJewel" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.12, -0.25)
+[node name="HelmetVisorFrame" type="Node3D" parent="XROrigin3D/XRCamera3D"]
+
+[node name="ForeheadCanopy" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0.155, -0.2)
+mesh = SubResource("BoxMesh_canopy_top")
+
+[node name="CenterCrest" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.118, -0.225)
+mesh = SubResource("PrismMesh_center_crest")
+
+[node name="ForeheadGemBezel" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.124, -0.222)
+mesh = SubResource("PrismMesh_gem_bezel")
+
+[node name="ForeheadGem" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.124, -0.218)
 mesh = SubResource("PrismMesh_jewel")
+
+[node name="BrowArchLeft" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
+transform = Transform3D(0.978148, 0.198669, 0.0634125, -0.207912, 0.935408, 0.285627, 0.00258189, -0.292671, 0.956209, -0.105, 0.128, -0.218)
+mesh = SubResource("BoxMesh_brow_arch")
+
+[node name="BrowArchRight" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
+transform = Transform3D(0.978148, -0.198669, -0.0634125, 0.207912, 0.935408, 0.285627, -0.00258189, -0.292671, 0.956209, 0.105, 0.128, -0.218)
+mesh = SubResource("BoxMesh_brow_arch")
+
+[node name="TempleLeft" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -0.195, 0.04, -0.2)
+mesh = SubResource("BoxMesh_temple_side")
+
+[node name="TempleRight" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/HelmetVisorFrame"]
+transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 0.195, 0.04, -0.2)
+mesh = SubResource("BoxMesh_temple_side")
 
 [node name="LeftController" type="XRController3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 1.2, -0.35)
 tracker = &"left_hand"
 
-[node name="GauntletMesh" type="MeshInstance3D" parent="XROrigin3D/LeftController"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
-mesh = SubResource("BoxMesh_left_gauntlet")
+[node name="LeftHandOffset" type="Node3D" parent="XROrigin3D/LeftController"]
+transform = Transform3D(1, 0, 0, 0, 0.978148, 0.207912, 0, -0.207912, 0.978148, 0, -0.015, 0.085)
 
-[node name="WristMesh" type="MeshInstance3D" parent="XROrigin3D/LeftController"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.06)
-mesh = SubResource("CylinderMesh_left_wrist")
+[node name="LeftChargeParticles" type="GPUParticles3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.02)
+emitting = false
+amount = 32
+lifetime = 0.35
+process_material = SubResource("ParticleProcessMaterial_charge")
+draw_pass_1 = SubResource("SphereMesh_sparkle")
+
+[node name="GauntletMesh" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02)
+mesh = SubResource("BoxMesh_gauntlet_compact")
+
+[node name="WristMesh" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.08)
+mesh = SubResource("CylinderMesh_wrist_cuff")
+
+[node name="EnergyGauge" type="Node3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.046, 0, 0.02)
+
+[node name="GaugeBack" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
+mesh = SubResource("BoxMesh_gauge_back")
+
+[node name="Segment1" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, 0.022, 0)
+mesh = SubResource("BoxMesh_gauge_segment")
+
+[node name="Segment2" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, 0.013, 0)
+mesh = SubResource("BoxMesh_gauge_segment")
+
+[node name="Segment3" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, 0.004, 0)
+mesh = SubResource("BoxMesh_gauge_segment")
+
+[node name="Segment4" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, -0.005, 0)
+mesh = SubResource("BoxMesh_gauge_segment")
+
+[node name="Segment5" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, -0.014, 0)
+mesh = SubResource("BoxMesh_gauge_segment")
+
+[node name="Segment6" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, -0.023, 0)
+mesh = SubResource("BoxMesh_gauge_segment")
+
+[node name="RoboticHand" type="Node3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.045)
+
+[node name="Palm" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.006, -0.02)
+mesh = SubResource("BoxMesh_palm")
+
+[node name="ThumbProximal" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
+transform = Transform3D(0.707107, 0.612372, -0.353553, 0, 0.5, 0.866025, 0.707107, -0.612372, 0.353553, 0.036, -0.008, -0.014)
+mesh = SubResource("BoxMesh_thumb_proximal")
+
+[node name="ThumbDistal" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
+transform = Transform3D(0.5, 0.75, -0.433013, 0, 0.5, 0.866025, 0.866025, -0.433013, 0.25, 0.042, -0.018, -0.034)
+mesh = SubResource("BoxMesh_thumb_distal")
+
+[node name="IndexProximal" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0.022, -0.006, -0.05)
+mesh = SubResource("BoxMesh_finger_proximal")
+
+[node name="IndexDistal" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
+transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0.022, -0.018, -0.062)
+mesh = SubResource("BoxMesh_finger_distal")
+
+[node name="MiddleProximal" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0.007, -0.006, -0.053)
+mesh = SubResource("BoxMesh_finger_proximal")
+
+[node name="MiddleDistal" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
+transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0.007, -0.018, -0.066)
+mesh = SubResource("BoxMesh_finger_distal")
+
+[node name="RingProximal" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, -0.008, -0.006, -0.05)
+mesh = SubResource("BoxMesh_finger_proximal")
+
+[node name="RingDistal" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
+transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, -0.008, -0.018, -0.062)
+mesh = SubResource("BoxMesh_finger_distal")
+
+[node name="PinkyProximal" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, -0.022, -0.006, -0.045)
+mesh = SubResource("BoxMesh_finger_proximal")
+
+[node name="PinkyDistal" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
+transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, -0.022, -0.016, -0.055)
+mesh = SubResource("BoxMesh_finger_distal")
 
 [node name="RightController" type="XRController3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.2, -0.35)
 tracker = &"right_hand"
 
-[node name="XBuster" type="Node3D" parent="XROrigin3D/RightController"]
+[node name="RightHandOffset" type="Node3D" parent="XROrigin3D/RightController"]
+transform = Transform3D(1, 0, 0, 0, 0.978148, 0.207912, 0, -0.207912, 0.978148, 0, -0.015, 0.085)
+
+[node name="XBuster" type="Node3D" parent="XROrigin3D/RightController/RightHandOffset"]
 script = ExtResource("2_buster")
 
-[node name="BusterBody" type="MeshInstance3D" parent="XROrigin3D/RightController/XBuster"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.06)
-mesh = SubResource("CylinderMesh_buster_body")
+[node name="RightChargeParticles" type="GPUParticles3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.04)
+emitting = false
+amount = 32
+lifetime = 0.35
+process_material = SubResource("ParticleProcessMaterial_charge")
+draw_pass_1 = SubResource("SphereMesh_sparkle")
 
-[node name="BusterRing" type="MeshInstance3D" parent="XROrigin3D/RightController/XBuster"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0.05)
+[node name="BusterRearBody" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
+transform = Transform3D(1.25, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0.01)
+mesh = SubResource("CylinderMesh_buster_rear_swell")
+
+[node name="BusterFrontBody" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
+transform = Transform3D(1.25, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.085)
+mesh = SubResource("CylinderMesh_buster_front_taper")
+
+[node name="BusterMidRing" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
+transform = Transform3D(1.25, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.038)
 mesh = SubResource("CylinderMesh_buster_ring")
 
-[node name="BusterMuzzle" type="MeshInstance3D" parent="XROrigin3D/RightController/XBuster"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.23)
+[node name="BusterMuzzle" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
+transform = Transform3D(1.25, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.145)
 mesh = SubResource("CylinderMesh_buster_muzzle")
 
-[node name="Muzzle" type="Marker3D" parent="XROrigin3D/RightController/XBuster"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
+[node name="MuzzleJewelBezel" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster/BusterMuzzle"]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0.052, 0, 0)
+mesh = SubResource("CylinderMesh_muzzle_gem_bezel")
 
-[node name="ChargeGlow" type="MeshInstance3D" parent="XROrigin3D/RightController/XBuster/Muzzle"]
-visible = false
-mesh = SubResource("SphereMesh_charge_glow")
+[node name="DomedMuzzleJewel" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster/BusterMuzzle/MuzzleJewelBezel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.004, 0)
+mesh = SubResource("SphereMesh_domed_jewel")
+
+[node name="ForearmCuffBand" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
+transform = Transform3D(1.25, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0.065)
+mesh = SubResource("CylinderMesh_cuff_band")
+
+[node name="CuffGemIndicator" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster/ForearmCuffBand"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.072)
+mesh = SubResource("PrismMesh_cuff_gem")
+
+[node name="Muzzle" type="Marker3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.17)

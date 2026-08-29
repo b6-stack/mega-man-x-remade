@@ -56,13 +56,13 @@ func _destroy() -> void:
 	_respawn_timer = respawn_time
 	visible = false
 	if collision_shape:
-		collision_shape.disabled = true
+		collision_shape.set_deferred("disabled", true)
 
 func _respawn() -> void:
 	_is_destroyed = false
 	current_health = max_health
 	visible = true
 	if collision_shape:
-		collision_shape.disabled = false
+		collision_shape.set_deferred("disabled", false)
 	if mesh_instance:
 		mesh_instance.material_override = null

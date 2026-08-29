@@ -31,4 +31,3 @@ renderer/rendering_method="mobile"
 
 openxr/enabled=true
 shaders/enabled=true
-

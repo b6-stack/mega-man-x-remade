@@ -1,6 +1,13 @@
 extends CharacterBody3D
 class_name VRPlayer
 
+enum ControllerProfile {
+	GENERIC_OPENXR,
+	META_QUEST,
+	VALVE_INDEX
+}
+
+@export var controller_profile: ControllerProfile = ControllerProfile.META_QUEST
 @export var move_speed: float = 4.0
 @export var turn_speed: float = 2.0
 @export var gravity: float = 9.8
@@ -9,11 +16,42 @@ class_name VRPlayer
 @onready var xr_camera: XRCamera3D = $XROrigin3D/XRCamera3D
 @onready var left_controller: XRController3D = $XROrigin3D/LeftController
 @onready var right_controller: XRController3D = $XROrigin3D/RightController
+@onready var left_hand_offset: Node3D = get_node_or_null("XROrigin3D/LeftController/LeftHandOffset")
+@onready var right_hand_offset: Node3D = get_node_or_null("XROrigin3D/RightController/RightHandOffset")
 
 var is_xr_active: bool = false
 
 func _ready() -> void:
+	_apply_controller_profile()
 	_init_openxr()
+
+func _apply_controller_profile() -> void:
+	# Calibrate tracking offsets based on VR controller profile
+	match controller_profile:
+		ControllerProfile.META_QUEST:
+			# Meta Quest Touch: grip offset ~+0.08m along Z, -12 deg pitch for natural wrist alignment
+			if left_hand_offset:
+				left_hand_offset.position = Vector3(0, -0.015, 0.085)
+				left_hand_offset.rotation_degrees = Vector3(-12, 0, 0)
+			if right_hand_offset:
+				right_hand_offset.position = Vector3(0, -0.015, 0.085)
+				right_hand_offset.rotation_degrees = Vector3(-12, 0, 0)
+		ControllerProfile.VALVE_INDEX:
+			# Valve Index Knuckles: steeper handle angle, closer pivot
+			if left_hand_offset:
+				left_hand_offset.position = Vector3(0, -0.02, 0.06)
+				left_hand_offset.rotation_degrees = Vector3(-20, 0, 0)
+			if right_hand_offset:
+				right_hand_offset.position = Vector3(0, -0.02, 0.06)
+				right_hand_offset.rotation_degrees = Vector3(-20, 0, 0)
+		ControllerProfile.GENERIC_OPENXR:
+			# Default standard OpenXR aim pose
+			if left_hand_offset:
+				left_hand_offset.position = Vector3(0, 0, 0.08)
+				left_hand_offset.rotation_degrees = Vector3(0, 0, 0)
+			if right_hand_offset:
+				right_hand_offset.position = Vector3(0, 0, 0.08)
+				right_hand_offset.rotation_degrees = Vector3(0, 0, 0)
 
 func _init_openxr() -> void:
 	var xr_interface: XRInterface = XRServer.find_interface("OpenXR")
