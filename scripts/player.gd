@@ -9,8 +9,9 @@ enum ControllerProfile {
 
 @export var controller_profile: ControllerProfile = ControllerProfile.META_QUEST
 @export var move_speed: float = 4.0
-@export var turn_speed: float = 2.0
-@export var gravity: float = 9.8
+@export var snap_turn_angle: float = 45.0
+@export var jump_velocity: float = 5.0
+@export var gravity: float = 12.0
 
 @onready var xr_origin: XROrigin3D = $XROrigin3D
 @onready var xr_camera: XRCamera3D = $XROrigin3D/XRCamera3D
@@ -20,16 +21,22 @@ enum ControllerProfile {
 @onready var right_hand_offset: Node3D = get_node_or_null("XROrigin3D/RightController/RightHandOffset")
 
 var is_xr_active: bool = false
+var _can_snap_turn: bool = true
+var _prev_q_pressed: bool = false
+var _prev_e_pressed: bool = false
 
 func _ready() -> void:
 	_apply_controller_profile()
 	_init_openxr()
+	
+	if right_controller:
+		right_controller.button_pressed.connect(_on_controller_button_pressed)
+	if left_controller:
+		left_controller.button_pressed.connect(_on_controller_button_pressed)
 
 func _apply_controller_profile() -> void:
-	# Calibrate tracking offsets based on VR controller profile
 	match controller_profile:
 		ControllerProfile.META_QUEST:
-			# Meta Quest Touch: left hand rotated 90 deg so thumb rests naturally on thumbstick face & palm wraps grip
 			if left_hand_offset:
 				left_hand_offset.position = Vector3(0, -0.015, 0.085)
 				left_hand_offset.rotation_degrees = Vector3(-12, 0, 90)
@@ -37,7 +44,6 @@ func _apply_controller_profile() -> void:
 				right_hand_offset.position = Vector3(0, -0.015, 0.085)
 				right_hand_offset.rotation_degrees = Vector3(-12, 0, 0)
 		ControllerProfile.VALVE_INDEX:
-			# Valve Index Knuckles
 			if left_hand_offset:
 				left_hand_offset.position = Vector3(0, -0.02, 0.06)
 				left_hand_offset.rotation_degrees = Vector3(-20, 0, 90)
@@ -45,7 +51,6 @@ func _apply_controller_profile() -> void:
 				right_hand_offset.position = Vector3(0, -0.02, 0.06)
 				right_hand_offset.rotation_degrees = Vector3(-20, 0, 0)
 		ControllerProfile.GENERIC_OPENXR:
-			# Default standard OpenXR aim pose
 			if left_hand_offset:
 				left_hand_offset.position = Vector3(0, 0, 0.08)
 				left_hand_offset.rotation_degrees = Vector3(0, 0, 90)
@@ -63,22 +68,31 @@ func _init_openxr() -> void:
 	else:
 		print("Mega Man X VR: OpenXR not found/active. Desktop preview mode.")
 
+func _on_controller_button_pressed(button_name: String) -> void:
+	# VR Jump on primary face button (A on Touch / primary click)
+	if button_name == "ax_button" or button_name == "by_button" or button_name == "primary_click":
+		if is_on_floor():
+			velocity.y = jump_velocity
+
 func _physics_process(delta: float) -> void:
+	# Gravity & Jump
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	else:
-		velocity.y = 0.0
+		if velocity.y < 0.0:
+			velocity.y = 0.0
+		# Desktop jump fallback on Space / Enter
+		if Input.is_action_just_pressed("ui_accept") or Input.is_key_pressed(KEY_ENTER):
+			velocity.y = jump_velocity
 
+	# Locomotion Movement (Left Stick / WASD)
 	var input_vec := Vector2.ZERO
-	
-	# Left controller thumbstick input if in XR
 	if is_xr_active and left_controller:
 		var thumbstick: Vector2 = left_controller.get_vector2("primary")
 		if thumbstick.length() < 0.1:
 			thumbstick = left_controller.get_vector2("thumbstick")
 		input_vec = thumbstick
 	
-	# Desktop WASD fallback
 	if input_vec == Vector2.ZERO:
 		if Input.is_key_pressed(KEY_W): input_vec.y += 1.0
 		if Input.is_key_pressed(KEY_S): input_vec.y -= 1.0
@@ -86,7 +100,6 @@ func _physics_process(delta: float) -> void:
 		if Input.is_key_pressed(KEY_D): input_vec.x += 1.0
 		input_vec = input_vec.normalized()
 
-	# Calculate movement relative to camera direction
 	if input_vec != Vector2.ZERO:
 		var cam_basis := xr_camera.global_transform.basis
 		var forward := -cam_basis.z
@@ -101,15 +114,33 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_dir.x * move_speed
 		velocity.z = move_dir.z * move_speed
 	else:
-		velocity.x = move_toward(velocity.x, 0, move_speed * delta * 5.0)
-		velocity.z = move_toward(velocity.z, 0, move_speed * delta * 5.0)
+		velocity.x = move_toward(velocity.x, 0, move_speed * delta * 6.0)
+		velocity.z = move_toward(velocity.z, 0, move_speed * delta * 6.0)
 
-	# Right controller turn input (smooth turn)
+	# VR Snap Turning (Right Stick flick left/right)
+	var snap_input := 0.0
 	if is_xr_active and right_controller:
 		var r_stick: Vector2 = right_controller.get_vector2("primary")
 		if r_stick.length() < 0.1:
 			r_stick = right_controller.get_vector2("thumbstick")
-		if abs(r_stick.x) > 0.2:
-			rotate_y(-r_stick.x * turn_speed * delta)
+		snap_input = r_stick.x
+
+	if abs(snap_input) > 0.5:
+		if _can_snap_turn:
+			var turn_sign: float = -1.0 if snap_input > 0.0 else 1.0
+			rotate_y(deg_to_rad(turn_sign * snap_turn_angle))
+			_can_snap_turn = false
+	elif abs(snap_input) < 0.2:
+		_can_snap_turn = true
+
+	# Desktop Snap Turning (Q and E keys)
+	var q_pressed := Input.is_key_pressed(KEY_Q)
+	var e_pressed := Input.is_key_pressed(KEY_E)
+	if q_pressed and not _prev_q_pressed:
+		rotate_y(deg_to_rad(snap_turn_angle))
+	if e_pressed and not _prev_e_pressed:
+		rotate_y(deg_to_rad(-snap_turn_angle))
+	_prev_q_pressed = q_pressed
+	_prev_e_pressed = e_pressed
 
 	move_and_slide()
