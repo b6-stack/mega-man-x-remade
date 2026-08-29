@@ -88,9 +88,10 @@ func start_charging() -> void:
 	_apply_charge_particles(1)
 
 func _process_charging(delta: float) -> void:
-	if charge_time < 0.5:
+	# Level 2 reached at 2.0s, Level 3 reached at +3.0s (5.0s total)
+	if charge_time < 2.0:
 		current_level = 1
-	elif charge_time < 1.5:
+	elif charge_time < 5.0:
 		current_level = 2
 	else:
 		current_level = 3
@@ -114,9 +115,9 @@ func release_charge() -> void:
 		return
 	
 	var shot_level := 1
-	if charge_time < 0.5:
+	if charge_time < 2.0:
 		shot_level = 1
-	elif charge_time < 1.5:
+	elif charge_time < 5.0:
 		shot_level = 2
 	else:
 		shot_level = 3
@@ -179,7 +180,6 @@ func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: 
 
 	p.visible = true
 	p.amount = p_amount
-	# Snappier, shorter lifetime: quick electric sizzle
 	p.lifetime = 0.07
 	
 	var p_mat := ParticleProcessMaterial.new()
