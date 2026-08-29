@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://bvxk9p10qleja"]
+[gd_scene load_steps=41 format=3 uid="uid://bvxk9p10qleja"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/buster.gd" id="2_buster"]
@@ -150,22 +150,16 @@ top_radius = 0.048
 bottom_radius = 0.052
 height = 0.045
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_muzzle_bore_dark"]
-material = SubResource("StandardMaterial3D_armor_dark")
-top_radius = 0.016
-bottom_radius = 0.016
-height = 0.02
-
 [sub_resource type="CylinderMesh" id="CylinderMesh_muzzle_gem_bezel"]
 material = SubResource("StandardMaterial3D_armor_dark")
-top_radius = 0.012
-bottom_radius = 0.012
+top_radius = 0.038
+bottom_radius = 0.038
 height = 0.006
 
 [sub_resource type="SphereMesh" id="SphereMesh_domed_jewel"]
 material = SubResource("StandardMaterial3D_jewel")
-radius = 0.010
-height = 0.018
+radius = 0.026
+height = 0.032
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_cuff_band"]
 material = SubResource("StandardMaterial3D_armor_dark")
@@ -362,12 +356,8 @@ mesh = SubResource("CylinderMesh_buster_front_taper")
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.1625)
 mesh = SubResource("CylinderMesh_buster_muzzle_blue")
 
-[node name="MuzzleBoreInner" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.180)
-mesh = SubResource("CylinderMesh_muzzle_bore_dark")
-
 [node name="MuzzleJewelBezel" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.030, -0.185)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.185)
 mesh = SubResource("CylinderMesh_muzzle_gem_bezel")
 
 [node name="DomedMuzzleJewel" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster/MuzzleJewelBezel"]
@@ -383,4 +373,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.072)
 mesh = SubResource("PrismMesh_cuff_gem")
 
 [node name="Muzzle" type="Marker3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.185)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.192)
