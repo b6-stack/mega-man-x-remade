@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://bvxk9p10qleja"]
+[gd_scene load_steps=42 format=3 uid="uid://bvxk9p10qleja"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/buster.gd" id="2_buster"]
@@ -50,15 +50,23 @@ albedo_color = Color(0.1, 0.1, 0.14, 1)
 metallic = 0.7
 roughness = 0.3
 
-[sub_resource type="BoxMesh" id="BoxMesh_gauntlet_compact"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_gauntlet_rear_swell"]
 material = SubResource("StandardMaterial3D_armor_cyan")
-size = Vector3(0.088, 0.088, 0.11)
+top_radius = 0.066
+bottom_radius = 0.056
+height = 0.075
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_wrist_cuff"]
-material = SubResource("StandardMaterial3D_armor_dark")
-top_radius = 0.052
-bottom_radius = 0.054
-height = 0.035
+[sub_resource type="CylinderMesh" id="CylinderMesh_gauntlet_front_taper"]
+material = SubResource("StandardMaterial3D_armor_cyan")
+top_radius = 0.048
+bottom_radius = 0.066
+height = 0.075
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_gauntlet_wrist_ring"]
+material = SubResource("StandardMaterial3D_armor_cyan")
+top_radius = 0.046
+bottom_radius = 0.048
+height = 0.025
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_glove_white"]
 albedo_color = Color(0.96, 0.96, 0.98, 1)
@@ -67,7 +75,7 @@ roughness = 0.3
 
 [sub_resource type="BoxMesh" id="BoxMesh_palm"]
 material = SubResource("StandardMaterial3D_glove_white")
-size = Vector3(0.065, 0.040, 0.065)
+size = Vector3(0.062, 0.038, 0.062)
 
 [sub_resource type="BoxMesh" id="BoxMesh_finger_proximal"]
 material = SubResource("StandardMaterial3D_glove_white")
@@ -154,7 +162,7 @@ radius = 0.026
 height = 0.030
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_cuff_band"]
-material = SubResource("StandardMaterial3D_armor_dark")
+material = SubResource("StandardMaterial3D_armor_cyan")
 top_radius = 0.072
 bottom_radius = 0.072
 height = 0.038
@@ -236,16 +244,20 @@ lifetime = 0.07
 process_material = SubResource("ParticleProcessMaterial_charge")
 draw_pass_1 = SubResource("SphereMesh_sparkle")
 
-[node name="GauntletMesh" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.015)
-mesh = SubResource("BoxMesh_gauntlet_compact")
+[node name="GauntletRearBody" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0.045)
+mesh = SubResource("CylinderMesh_gauntlet_rear_swell")
 
-[node name="WristMesh" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.065)
-mesh = SubResource("CylinderMesh_wrist_cuff")
+[node name="GauntletFrontBody" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.015)
+mesh = SubResource("CylinderMesh_gauntlet_front_taper")
+
+[node name="GauntletWristRing" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.055)
+mesh = SubResource("CylinderMesh_gauntlet_wrist_ring")
 
 [node name="EnergyGauge" type="Node3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.046, 0, 0.015)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.048, 0, 0.010)
 
 [node name="GaugeBack" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
 mesh = SubResource("BoxMesh_gauge_back")
@@ -275,7 +287,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, -0.023, 0)
 mesh = SubResource("BoxMesh_gauge_segment")
 
 [node name="RoboticHand" type="Node3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.035)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.055)
 
 [node name="Palm" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/RoboticHand"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.012)
