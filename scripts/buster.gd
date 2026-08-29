@@ -155,17 +155,17 @@ func _apply_charge_particles(level: int) -> void:
 
 	match level:
 		1:
-			# Chunky initial charge sparks
-			_set_particle_system(right_particles, true, Color(1.0, 0.95, 0.2), 0.04, 18)
-			_set_particle_system(left_particles, true, Color(1.0, 0.95, 0.2), 0.04, 18)
+			# Short-lifespan initial charge sparks
+			_set_particle_system(right_particles, true, Color(1.0, 0.95, 0.2), 0.04, 20)
+			_set_particle_system(left_particles, true, Color(1.0, 0.95, 0.2), 0.04, 20)
 		2:
-			# Dense chunky flashing green glow plasma blobs surrounding both hands
-			_set_particle_system(right_particles, true, Color(0.2, 1.0, 0.45), 0.07, 36)
-			_set_particle_system(left_particles, true, Color(0.2, 1.0, 0.45), 0.07, 36)
+			# Dense chunky snappy flashing green plasma bursts around both hands
+			_set_particle_system(right_particles, true, Color(0.2, 1.0, 0.45), 0.065, 40)
+			_set_particle_system(left_particles, true, Color(0.2, 1.0, 0.45), 0.065, 40)
 		3:
-			# Ultra-dense chunky flashing bright blue plasma blobs surrounding both hands
-			_set_particle_system(right_particles, true, Color(0.15, 0.75, 1.0), 0.11, 54)
-			_set_particle_system(left_particles, true, Color(0.15, 0.75, 1.0), 0.11, 54)
+			# Dense chunky snappy flashing bright blue plasma bursts around both hands
+			_set_particle_system(right_particles, true, Color(0.15, 0.75, 1.0), 0.095, 60)
+			_set_particle_system(left_particles, true, Color(0.15, 0.75, 1.0), 0.095, 60)
 
 func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: float, p_amount: int) -> void:
 	if not p:
@@ -178,18 +178,19 @@ func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: 
 
 	p.visible = true
 	p.amount = p_amount
-	p.lifetime = 0.32
+	# Snappy short lifespan: particles come out tightly and quickly disappear
+	p.lifetime = 0.12
 	
 	var p_mat := ParticleProcessMaterial.new()
 	p_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	p_mat.emission_sphere_radius = 0.20
+	p_mat.emission_sphere_radius = 0.10
 	p_mat.direction = Vector3(0, 0, 0)
 	p_mat.spread = 180.0
-	p_mat.radial_velocity_min = -0.8
-	p_mat.radial_velocity_max = -1.6
-	p_mat.gravity = Vector3(0, 0.3, 0)
-	p_mat.scale_min = p_scale * 0.75
-	p_mat.scale_max = p_scale * 1.35
+	p_mat.initial_velocity_min = 0.4
+	p_mat.initial_velocity_max = 1.2
+	p_mat.gravity = Vector3(0, 0, 0)
+	p_mat.scale_min = p_scale * 0.8
+	p_mat.scale_max = p_scale * 1.3
 	p.process_material = p_mat
 
 	var draw_mesh := SphereMesh.new()
