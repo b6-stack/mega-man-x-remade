@@ -23,10 +23,9 @@ func _ready() -> void:
 	if not muzzle:
 		muzzle = Marker3D.new()
 		muzzle.name = "Muzzle"
-		muzzle.position = Vector3(0, 0, -0.17)
+		muzzle.position = Vector3(0, 0, -0.240)
 		add_child(muzzle)
 	
-	# Find left charge particles
 	left_particles = get_node_or_null(left_particles_path) as GPUParticles3D
 	if not left_particles and get_tree().current_scene:
 		left_particles = get_tree().current_scene.find_child("LeftChargeParticles", true, false) as GPUParticles3D
@@ -156,17 +155,17 @@ func _apply_charge_particles(level: int) -> void:
 
 	match level:
 		1:
-			# Subtle initial charge aura
-			_set_particle_system(right_particles, true, Color(1.0, 0.95, 0.2), 0.02, 16)
-			_set_particle_system(left_particles, true, Color(1.0, 0.95, 0.2), 0.02, 16)
+			# Chunky initial charge sparks
+			_set_particle_system(right_particles, true, Color(1.0, 0.95, 0.2), 0.04, 18)
+			_set_particle_system(left_particles, true, Color(1.0, 0.95, 0.2), 0.04, 18)
 		2:
-			# Flashing green glow particles/sparkles surrounding both hands
-			_set_particle_system(right_particles, true, Color(0.2, 1.0, 0.45), 0.035, 32)
-			_set_particle_system(left_particles, true, Color(0.2, 1.0, 0.45), 0.035, 32)
+			# Dense chunky flashing green glow plasma blobs surrounding both hands
+			_set_particle_system(right_particles, true, Color(0.2, 1.0, 0.45), 0.07, 36)
+			_set_particle_system(left_particles, true, Color(0.2, 1.0, 0.45), 0.07, 36)
 		3:
-			# Flashing bright blue glow particles/sparkles surrounding both hands
-			_set_particle_system(right_particles, true, Color(0.2, 0.75, 1.0), 0.05, 48)
-			_set_particle_system(left_particles, true, Color(0.2, 0.75, 1.0), 0.05, 48)
+			# Ultra-dense chunky flashing bright blue plasma blobs surrounding both hands
+			_set_particle_system(right_particles, true, Color(0.15, 0.75, 1.0), 0.11, 54)
+			_set_particle_system(left_particles, true, Color(0.15, 0.75, 1.0), 0.11, 54)
 
 func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: float, p_amount: int) -> void:
 	if not p:
@@ -179,17 +178,18 @@ func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: 
 
 	p.visible = true
 	p.amount = p_amount
+	p.lifetime = 0.32
 	
 	var p_mat := ParticleProcessMaterial.new()
 	p_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	p_mat.emission_sphere_radius = 0.18
+	p_mat.emission_sphere_radius = 0.20
 	p_mat.direction = Vector3(0, 0, 0)
 	p_mat.spread = 180.0
-	p_mat.radial_velocity_min = -0.4
-	p_mat.radial_velocity_max = -0.9
-	p_mat.gravity = Vector3(0, 0.2, 0)
-	p_mat.scale_min = p_scale * 0.7
-	p_mat.scale_max = p_scale * 1.3
+	p_mat.radial_velocity_min = -0.8
+	p_mat.radial_velocity_max = -1.6
+	p_mat.gravity = Vector3(0, 0.3, 0)
+	p_mat.scale_min = p_scale * 0.75
+	p_mat.scale_max = p_scale * 1.35
 	p.process_material = p_mat
 
 	var draw_mesh := SphereMesh.new()
@@ -200,7 +200,7 @@ func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: 
 	draw_mat.albedo_color = color
 	draw_mat.emission_enabled = true
 	draw_mat.emission = color
-	draw_mat.emission_energy_multiplier = 5.0
+	draw_mat.emission_energy_multiplier = 6.0
 	draw_mesh.material = draw_mat
 	p.draw_pass_1 = draw_mesh
 	

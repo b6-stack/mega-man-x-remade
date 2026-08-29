@@ -29,7 +29,7 @@ func _update_shot_properties() -> void:
 
 	match charge_level:
 		1:
-			# Level 1 (Lemon): Elongated capsule/sphere, radius ~0.05m, length ~0.10m, emissive yellow material
+			# Level 1 (Lemon): 0.05m radius x 0.10m length capsule, yellow emissive
 			damage = 1.0
 			speed = 24.0
 			scale = Vector3(1.0, 1.0, 1.0)
@@ -58,7 +58,7 @@ func _update_shot_properties() -> void:
 				particles.visible = false
 
 		2:
-			# Level 2 (Medium): Energy capsule/sphere, radius ~0.12m, length ~0.22m, emissive green material + green trailing particles
+			# Level 2 (Medium): 0.12m radius x 0.22m length capsule, chunky dense green trail
 			damage = 2.5
 			speed = 27.0
 			scale = Vector3(1.0, 1.0, 1.0)
@@ -85,10 +85,10 @@ func _update_shot_properties() -> void:
 			if particles:
 				particles.emitting = true
 				particles.visible = true
-				_setup_particles(Color(0.2, 1.0, 0.4), 0.04)
+				_setup_particles(Color(0.2, 1.0, 0.45), 0.10, 32, 0.22)
 
 		3:
-			# Level 3 (Charged): Large plasma blast, radius ~0.25m, length ~0.50m, emissive blue material + blue trailing particles
+			# Level 3 (Charged): 0.25m radius x 0.50m length capsule, ultra-chunky dense blue plasma trail
 			damage = 5.0
 			speed = 30.0
 			scale = Vector3(1.0, 1.0, 1.0)
@@ -105,8 +105,8 @@ func _update_shot_properties() -> void:
 				collision_shape.shape = shape
 				collision_shape.rotation_degrees = Vector3(90, 0, 0)
 
-			mat.albedo_color = Color(0.1, 0.6, 1.0, 1.0)
-			mat.emission = Color(0.1, 0.55, 1.0)
+			mat.albedo_color = Color(0.15, 0.75, 1.0, 1.0)
+			mat.emission = Color(0.1, 0.65, 1.0)
 			mat.emission_energy_multiplier = 7.0
 			if light:
 				light.light_color = Color(0.2, 0.65, 1.0)
@@ -115,25 +115,29 @@ func _update_shot_properties() -> void:
 			if particles:
 				particles.emitting = true
 				particles.visible = true
-				_setup_particles(Color(0.2, 0.7, 1.0), 0.08)
+				_setup_particles(Color(0.15, 0.75, 1.0), 0.22, 48, 0.28)
 
 	if mesh_instance:
 		mesh_instance.material_override = mat
 
-func _setup_particles(color: Color, p_scale: float) -> void:
+func _setup_particles(color: Color, p_scale: float, p_amount: int, p_lifetime: float) -> void:
 	if not particles:
 		return
 	
+	particles.amount = p_amount
+	particles.lifetime = p_lifetime
+	particles.local_coords = false
+	
 	var p_mat := ParticleProcessMaterial.new()
 	p_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	p_mat.emission_sphere_radius = p_scale * 1.2
+	p_mat.emission_sphere_radius = p_scale * 0.4
 	p_mat.direction = Vector3(0, 0, 1)
-	p_mat.spread = 15.0
-	p_mat.initial_velocity_min = 2.0
-	p_mat.initial_velocity_max = 5.0
+	p_mat.spread = 10.0
+	p_mat.initial_velocity_min = 1.0
+	p_mat.initial_velocity_max = 3.0
 	p_mat.gravity = Vector3(0, 0, 0)
-	p_mat.scale_min = p_scale * 0.6
-	p_mat.scale_max = p_scale * 1.4
+	p_mat.scale_min = p_scale * 0.8
+	p_mat.scale_max = p_scale * 1.3
 	particles.process_material = p_mat
 
 	var draw_mesh := SphereMesh.new()
@@ -144,7 +148,7 @@ func _setup_particles(color: Color, p_scale: float) -> void:
 	draw_mat.albedo_color = color
 	draw_mat.emission_enabled = true
 	draw_mat.emission = color
-	draw_mat.emission_energy_multiplier = 4.0
+	draw_mat.emission_energy_multiplier = 6.0
 	draw_mesh.material = draw_mat
 	particles.draw_pass_1 = draw_mesh
 
