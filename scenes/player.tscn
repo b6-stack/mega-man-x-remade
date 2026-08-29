@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://bvxk9p10qleja"]
+[gd_scene load_steps=39 format=3 uid="uid://bvxk9p10qleja"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/buster.gd" id="2_buster"]
@@ -136,25 +136,13 @@ height = 0.036
 material = SubResource("StandardMaterial3D_armor_cyan")
 top_radius = 0.078
 bottom_radius = 0.066
-height = 0.095
+height = 0.1
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_buster_front_taper"]
 material = SubResource("StandardMaterial3D_armor_cyan")
 top_radius = 0.052
 bottom_radius = 0.078
-height = 0.095
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yellow_ring"]
-albedo_color = Color(1, 0.85, 0.1, 1)
-emission_enabled = true
-emission = Color(1, 0.8, 0, 1)
-emission_energy_multiplier = 2.0
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_buster_ring"]
-material = SubResource("StandardMaterial3D_yellow_ring")
-top_radius = 0.079
-bottom_radius = 0.079
-height = 0.018
+height = 0.1
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_barrel_dark"]
 albedo_color = Color(0.1, 0.1, 0.13, 1)
@@ -164,19 +152,19 @@ roughness = 0.2
 [sub_resource type="CylinderMesh" id="CylinderMesh_buster_muzzle"]
 material = SubResource("StandardMaterial3D_barrel_dark")
 top_radius = 0.048
-bottom_radius = 0.053
+bottom_radius = 0.052
 height = 0.045
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_muzzle_gem_bezel"]
 material = SubResource("StandardMaterial3D_barrel_dark")
-top_radius = 0.016
-bottom_radius = 0.016
-height = 0.006
+top_radius = 0.018
+bottom_radius = 0.018
+height = 0.008
 
 [sub_resource type="SphereMesh" id="SphereMesh_domed_jewel"]
 material = SubResource("StandardMaterial3D_jewel")
-radius = 0.014
-height = 0.012
+radius = 0.015
+height = 0.014
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_cuff_band"]
 material = SubResource("StandardMaterial3D_barrel_dark")
@@ -366,23 +354,19 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 
 mesh = SubResource("CylinderMesh_buster_rear_swell")
 
 [node name="BusterFrontBody" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.085)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.09)
 mesh = SubResource("CylinderMesh_buster_front_taper")
 
-[node name="BusterMidRing" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.038)
-mesh = SubResource("CylinderMesh_buster_ring")
-
 [node name="BusterMuzzle" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.145)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.16)
 mesh = SubResource("CylinderMesh_buster_muzzle")
 
-[node name="MuzzleJewelBezel" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster/BusterMuzzle"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.028, -0.024, 0.028)
+[node name="MuzzleJewelBezel" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.034, -0.18)
 mesh = SubResource("CylinderMesh_muzzle_gem_bezel")
 
-[node name="DomedMuzzleJewel" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster/BusterMuzzle/MuzzleJewelBezel"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.003, 0)
+[node name="DomedMuzzleJewel" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.034, -0.183)
 mesh = SubResource("SphereMesh_domed_jewel")
 
 [node name="ForearmCuffBand" type="MeshInstance3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
@@ -394,4 +378,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.072)
 mesh = SubResource("PrismMesh_cuff_gem")
 
 [node name="Muzzle" type="Marker3D" parent="XROrigin3D/RightController/RightHandOffset/XBuster"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.185)
