@@ -45,11 +45,12 @@ func _find_controller() -> XRController3D:
 	return null
 
 func _on_controller_button_pressed(button_name: String) -> void:
-	if button_name == "trigger_click" or button_name == "trigger" or button_name == "primary_click" or button_name == "ax_button":
+	# Trigger exclusively fires/charges the Buster (A/B are reserved for jump)
+	if button_name == "trigger_click" or button_name == "trigger":
 		start_charging()
 
 func _on_controller_button_released(button_name: String) -> void:
-	if button_name == "trigger_click" or button_name == "trigger" or button_name == "primary_click" or button_name == "ax_button":
+	if button_name == "trigger_click" or button_name == "trigger":
 		release_charge()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -57,11 +58,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.pressed:
 			start_charging()
 		else:
-			release_charge()
-	elif event is InputEventKey and event.keycode == KEY_SPACE:
-		if event.pressed and not event.echo:
-			start_charging()
-		elif not event.pressed:
 			release_charge()
 
 func _process(delta: float) -> void:
@@ -71,7 +67,7 @@ func _process(delta: float) -> void:
 			start_charging()
 	elif controller and is_charging:
 		var trigger_val: float = controller.get_float("trigger")
-		if trigger_val < 0.2 and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not Input.is_key_pressed(KEY_SPACE):
+		if trigger_val < 0.2 and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			release_charge()
 
 	if is_charging:
@@ -88,10 +84,10 @@ func start_charging() -> void:
 	_apply_charge_particles(1)
 
 func _process_charging(delta: float) -> void:
-	# Level 2 reached at 2.0s, Level 3 reached at +3.0s (5.0s total)
-	if charge_time < 2.0:
+	# Level 2 reached at 1.0s, Level 3 reached at +3.0s (4.0s total)
+	if charge_time < 1.0:
 		current_level = 1
-	elif charge_time < 5.0:
+	elif charge_time < 4.0:
 		current_level = 2
 	else:
 		current_level = 3
@@ -115,9 +111,9 @@ func release_charge() -> void:
 		return
 	
 	var shot_level := 1
-	if charge_time < 2.0:
+	if charge_time < 1.0:
 		shot_level = 1
-	elif charge_time < 5.0:
+	elif charge_time < 4.0:
 		shot_level = 2
 	else:
 		shot_level = 3
@@ -156,16 +152,12 @@ func _apply_charge_particles(level: int) -> void:
 
 	match level:
 		1:
-			# Right Buster (Cannon box emitter - compact crisp sparks)
 			_set_particle_system(right_particles, true, Color(1.0, 0.95, 0.2), 0.016, 20, true)
-			# Left Glove (Hand sphere emitter)
 			_set_particle_system(left_particles, true, Color(1.0, 0.95, 0.2), 0.018, 12, false)
 		2:
-			# Level 2 Green Flashing Aura
 			_set_particle_system(right_particles, true, Color(0.2, 1.0, 0.45), 0.026, 35, true)
 			_set_particle_system(left_particles, true, Color(0.2, 1.0, 0.45), 0.030, 18, false)
 		3:
-			# Level 3 Blue Plasma Sparks
 			_set_particle_system(right_particles, true, Color(0.15, 0.75, 1.0), 0.038, 50, true)
 			_set_particle_system(left_particles, true, Color(0.15, 0.75, 1.0), 0.042, 26, false)
 

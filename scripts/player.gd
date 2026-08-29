@@ -10,8 +10,9 @@ enum ControllerProfile {
 @export var controller_profile: ControllerProfile = ControllerProfile.META_QUEST
 @export var move_speed: float = 4.0
 @export var snap_turn_angle: float = 45.0
-@export var jump_velocity: float = 5.0
-@export var gravity: float = 12.0
+# 3x jump height: peak height ~3.8m (was ~1.27m at 5.0m/s)
+@export var jump_velocity: float = 8.8
+@export var gravity: float = 10.5
 
 @onready var xr_origin: XROrigin3D = $XROrigin3D
 @onready var xr_camera: XRCamera3D = $XROrigin3D/XRCamera3D
@@ -69,7 +70,7 @@ func _init_openxr() -> void:
 		print("Mega Man X VR: OpenXR not found/active. Desktop preview mode.")
 
 func _on_controller_button_pressed(button_name: String) -> void:
-	# VR Jump on primary face button (A on Touch / primary click)
+	# Dedicated VR Jump on A, B, X, Y buttons or primary stick click
 	if button_name == "ax_button" or button_name == "by_button" or button_name == "primary_click":
 		if is_on_floor():
 			velocity.y = jump_velocity
@@ -82,7 +83,7 @@ func _physics_process(delta: float) -> void:
 		if velocity.y < 0.0:
 			velocity.y = 0.0
 		# Desktop jump fallback on Space / Enter
-		if Input.is_action_just_pressed("ui_accept") or Input.is_key_pressed(KEY_ENTER):
+		if Input.is_action_just_pressed("ui_accept") or Input.is_key_pressed(KEY_SPACE) or Input.is_key_pressed(KEY_ENTER):
 			velocity.y = jump_velocity
 
 	# Locomotion Movement (Left Stick / WASD)
