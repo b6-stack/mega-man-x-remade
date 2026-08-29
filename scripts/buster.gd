@@ -155,16 +155,20 @@ func _apply_charge_particles(level: int) -> void:
 
 	match level:
 		1:
-			_set_particle_system(right_particles, true, Color(1.0, 0.95, 0.2), 0.025, 10)
-			_set_particle_system(left_particles, true, Color(1.0, 0.95, 0.2), 0.025, 10)
+			# Right Buster (Cannon box emitter)
+			_set_particle_system(right_particles, true, Color(1.0, 0.95, 0.2), 0.035, 24, true)
+			# Left Glove (Hand sphere emitter)
+			_set_particle_system(left_particles, true, Color(1.0, 0.95, 0.2), 0.025, 12, false)
 		2:
-			_set_particle_system(right_particles, true, Color(0.2, 1.0, 0.45), 0.040, 18)
-			_set_particle_system(left_particles, true, Color(0.2, 1.0, 0.45), 0.040, 18)
+			# Level 2 Green Flashing Aura
+			_set_particle_system(right_particles, true, Color(0.2, 1.0, 0.45), 0.055, 45, true)
+			_set_particle_system(left_particles, true, Color(0.2, 1.0, 0.45), 0.040, 20, false)
 		3:
-			_set_particle_system(right_particles, true, Color(0.15, 0.75, 1.0), 0.055, 26)
-			_set_particle_system(left_particles, true, Color(0.15, 0.75, 1.0), 0.055, 26)
+			# Level 3 Blue Plasma Storm
+			_set_particle_system(right_particles, true, Color(0.15, 0.75, 1.0), 0.080, 68, true)
+			_set_particle_system(left_particles, true, Color(0.15, 0.75, 1.0), 0.055, 30, false)
 
-func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: float, p_amount: int) -> void:
+func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: float, p_amount: int, is_cannon: bool) -> void:
 	if not p:
 		return
 	
@@ -175,18 +179,27 @@ func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: 
 
 	p.visible = true
 	p.amount = p_amount
-	p.lifetime = 0.10
+	p.lifetime = 0.11
 	
 	var p_mat := ParticleProcessMaterial.new()
-	p_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	p_mat.emission_sphere_radius = 0.05
+	if is_cannon:
+		# Box emission covering the entire X-Buster cylindrical barrel
+		p_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+		p_mat.emission_box_extents = Vector3(0.09, 0.09, 0.13)
+		p_mat.initial_velocity_min = 0.3
+		p_mat.initial_velocity_max = 0.8
+	else:
+		# Compact sphere emission tightly hugging the left glove
+		p_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+		p_mat.emission_sphere_radius = 0.05
+		p_mat.initial_velocity_min = 0.2
+		p_mat.initial_velocity_max = 0.5
+
 	p_mat.direction = Vector3(0, 0, 0)
 	p_mat.spread = 180.0
-	p_mat.initial_velocity_min = 0.2
-	p_mat.initial_velocity_max = 0.5
 	p_mat.gravity = Vector3(0, 0, 0)
 	p_mat.scale_min = p_scale * 0.8
-	p_mat.scale_max = p_scale * 1.2
+	p_mat.scale_max = p_scale * 1.25
 	p.process_material = p_mat
 
 	var draw_mesh := SphereMesh.new()
@@ -204,8 +217,8 @@ func _set_particle_system(p: GPUParticles3D, emit: bool, color: Color, p_scale: 
 	p.emitting = true
 
 func _stop_all_charge_particles() -> void:
-	_set_particle_system(right_particles, false, Color.BLACK, 0, 0)
-	_set_particle_system(left_particles, false, Color.BLACK, 0, 0)
+	_set_particle_system(right_particles, false, Color.BLACK, 0, 0, true)
+	_set_particle_system(left_particles, false, Color.BLACK, 0, 0, false)
 
 func _send_haptic(frequency: float, amplitude: float, duration: float) -> void:
 	if controller and controller.has_method("trigger_haptic_pulse"):
