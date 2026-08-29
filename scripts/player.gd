@@ -29,18 +29,18 @@ func _apply_controller_profile() -> void:
 	# Calibrate tracking offsets based on VR controller profile
 	match controller_profile:
 		ControllerProfile.META_QUEST:
-			# Meta Quest Touch: grip offset ~+0.08m along Z, -12 deg pitch for natural wrist alignment
+			# Meta Quest Touch: left hand rotated 90 deg so thumb rests naturally on thumbstick face & palm wraps grip
 			if left_hand_offset:
 				left_hand_offset.position = Vector3(0, -0.015, 0.085)
-				left_hand_offset.rotation_degrees = Vector3(-12, 0, 0)
+				left_hand_offset.rotation_degrees = Vector3(-12, 0, 90)
 			if right_hand_offset:
 				right_hand_offset.position = Vector3(0, -0.015, 0.085)
 				right_hand_offset.rotation_degrees = Vector3(-12, 0, 0)
 		ControllerProfile.VALVE_INDEX:
-			# Valve Index Knuckles: steeper handle angle, closer pivot
+			# Valve Index Knuckles
 			if left_hand_offset:
 				left_hand_offset.position = Vector3(0, -0.02, 0.06)
-				left_hand_offset.rotation_degrees = Vector3(-20, 0, 0)
+				left_hand_offset.rotation_degrees = Vector3(-20, 0, 90)
 			if right_hand_offset:
 				right_hand_offset.position = Vector3(0, -0.02, 0.06)
 				right_hand_offset.rotation_degrees = Vector3(-20, 0, 0)
@@ -48,7 +48,7 @@ func _apply_controller_profile() -> void:
 			# Default standard OpenXR aim pose
 			if left_hand_offset:
 				left_hand_offset.position = Vector3(0, 0, 0.08)
-				left_hand_offset.rotation_degrees = Vector3(0, 0, 0)
+				left_hand_offset.rotation_degrees = Vector3(0, 0, 90)
 			if right_hand_offset:
 				right_hand_offset.position = Vector3(0, 0, 0.08)
 				right_hand_offset.rotation_degrees = Vector3(0, 0, 0)
