@@ -101,27 +101,27 @@ radius = 0.015
 height = 0.03
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_electric_aura"]
-emission_shape = 1
-emission_sphere_radius = 0.08
+emission_shape = 3
+emission_box_extents = Vector3(0.08, 0.08, 0.12)
 direction = Vector3(0, 1, 0)
 spread = 180.0
-initial_velocity_min = 0.5
-initial_velocity_max = 1.5
-gravity = Vector3(0, 1.0, 0)
-scale_min = 0.06
-scale_max = 0.12
+initial_velocity_min = 1.2
+initial_velocity_max = 3.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.8
+scale_max = 1.5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aura_p"]
 shading_mode = 0
-albedo_color = Color(0.2, 0.9, 1.0, 1)
+albedo_color = Color(0.3, 0.95, 1, 1)
 emission_enabled = true
-emission = Color(0.3, 0.95, 1.0, 1)
-emission_energy_multiplier = 8.0
+emission = Color(0.4, 0.98, 1, 1)
+emission_energy_multiplier = 10.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_aura_p"]
 material = SubResource("StandardMaterial3D_aura_p")
-radius = 0.035
-height = 0.07
+radius = 0.045
+height = 0.09
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_buster_rear_swell"]
 material = SubResource("StandardMaterial3D_armor_cyan")
