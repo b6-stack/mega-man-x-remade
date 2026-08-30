@@ -16,8 +16,10 @@ class_name BusterShot
 @onready var particles: GPUParticles3D = $TrailParticles
 
 var _lifetime: float = 3.0
+var _prev_global_pos: Vector3 = Vector3.ZERO
 
 func _ready() -> void:
+	_prev_global_pos = global_position
 	body_entered.connect(_on_body_entered)
 	area_entered.connect(_on_area_entered)
 	_update_shot_properties()
@@ -156,21 +158,53 @@ const IMPACT_SPLASH_SCENE: PackedScene = preload("res://scenes/effects/impact_sp
 const DEFLECT_SPARKS_SCENE: PackedScene = preload("res://scenes/effects/deflect_sparks.tscn")
 
 func _physics_process(delta: float) -> void:
-	global_position += -global_transform.basis.z * speed * delta
+	var move_step: Vector3 = -global_transform.basis.z * speed * delta
+	var next_pos: Vector3 = global_position + move_step
+	
+	# Raycast forward from current position along the step to hit the exact outer mesh surface
+	var space_state := get_world_3d().direct_space_state
+	if space_state:
+		var query := PhysicsRayQueryParameters3D.create(global_position, next_pos + move_step * 0.15)
+		query.exclude = [self]
+		query.collision_mask = collision_mask
+		var result := space_state.intersect_ray(query)
+		if not result.is_empty() and result.collider:
+			var hit_collider: Node3D = result.collider as Node3D
+			var hit_pos: Vector3 = result.position + result.normal * 0.08
+			var hit_normal: Vector3 = result.normal
+			_process_impact(hit_collider, hit_pos, hit_normal)
+			return
+
+	_prev_global_pos = global_position
+	global_position = next_pos
 	
 	_lifetime -= delta
 	if _lifetime <= 0.0:
 		queue_free()
 
 func _on_body_entered(body: Node3D) -> void:
-	_handle_hit(body)
+	_handle_hit_fallback(body)
 
 func _on_area_entered(area: Area3D) -> void:
-	_handle_hit(area)
+	_handle_hit_fallback(area)
 
-func _handle_hit(target: Node3D) -> void:
-	var hit_pos: Vector3 = global_position
+func _handle_hit_fallback(target: Node3D) -> void:
 	var hit_normal: Vector3 = global_transform.basis.z
+	var hit_pos: Vector3 = _prev_global_pos + hit_normal * 0.08
+	
+	var space_state := get_world_3d().direct_space_state
+	if space_state:
+		var query := PhysicsRayQueryParameters3D.create(_prev_global_pos, global_position + -global_transform.basis.z * 0.5)
+		query.exclude = [self]
+		query.collision_mask = collision_mask
+		var result := space_state.intersect_ray(query)
+		if not result.is_empty():
+			hit_pos = result.position + result.normal * 0.08
+			hit_normal = result.normal
+
+	_process_impact(target, hit_pos, hit_normal)
+
+func _process_impact(target: Node3D, hit_pos: Vector3, hit_normal: Vector3) -> void:
 	var damage_dealt := false
 	
 	var damage_target: Node = target
