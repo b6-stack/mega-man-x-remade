@@ -7,6 +7,13 @@ enum ControllerProfile {
 	VALVE_INDEX
 }
 
+const DEATH_VORTEX_SCENE: PackedScene = preload("res://scenes/effects/death_vortex.tscn")
+
+@export_group("Health & Combat")
+@export var max_health: int = 8
+@export var invincibility_duration: float = 1.0
+@export var knockback_force: float = 5.5
+
 @export_group("Controller Profile")
 @export var controller_profile: ControllerProfile = ControllerProfile.META_QUEST
 
@@ -35,7 +42,16 @@ enum ControllerProfile {
 @onready var left_hand_offset: Node3D = get_node_or_null("XROrigin3D/LeftController/LeftHandOffset")
 @onready var right_hand_offset: Node3D = get_node_or_null("XROrigin3D/RightController/RightHandOffset")
 @onready var wall_slide_particles: GPUParticles3D = get_node_or_null("WallSlideParticles")
+@onready var electric_aura_left: GPUParticles3D = get_node_or_null("XROrigin3D/LeftController/LeftHandOffset/ElectricAuraLeft")
+@onready var electric_aura_right: GPUParticles3D = get_node_or_null("XROrigin3D/RightController/RightHandOffset/ElectricAuraRight")
+@onready var energy_gauge: Node3D = get_node_or_null("XROrigin3D/LeftController/LeftHandOffset/EnergyGauge")
+@onready var whiteout_quad: MeshInstance3D = get_node_or_null("XROrigin3D/XRCamera3D/WhiteoutQuad")
+@onready var laser_pointer: Node3D = get_node_or_null("XROrigin3D/RightController/LaserPointer")
+@onready var pause_menu: Node3D = get_node_or_null("XROrigin3D/PauseMenu")
+@onready var game_over_menu: Node3D = get_node_or_null("XROrigin3D/GameOverMenu")
 
+var current_health: int = 8
+var is_dead: bool = false
 var is_xr_active: bool = false
 var is_wall_sliding: bool = false
 var is_dashing: bool = false
@@ -54,7 +70,15 @@ var _dash_cooldown_timer: float = 0.0
 var _dash_direction: Vector3 = Vector3.ZERO
 var _dash_jump_direction: Vector3 = Vector3.ZERO
 
+var invincible_timer: float = 0.0
+var _aura_timer: float = 0.0
+var _whiteout_progress: float = 0.0
+
 func _ready() -> void:
+	current_health = max_health
+	if energy_gauge:
+		energy_gauge.set_health(current_health, max_health)
+	
 	_apply_controller_profile()
 	_init_openxr()
 	
@@ -98,6 +122,13 @@ func _init_openxr() -> void:
 		print("Mega Man X VR: OpenXR not found/active. Desktop preview mode.")
 
 func _on_controller_button_pressed(button_name: String) -> void:
+	if button_name == "menu_button" or button_name == "start_button":
+		toggle_pause()
+		return
+
+	if is_dead:
+		return
+
 	# VR Jump (A, B, X, Y or stick click)
 	if button_name == "ax_button" or button_name == "by_button" or button_name == "primary_click":
 		_try_jump()
@@ -106,12 +137,123 @@ func _on_controller_button_pressed(button_name: String) -> void:
 	if button_name == "grip_click" or button_name == "secondary_click":
 		_try_dash()
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		toggle_pause()
+
+func toggle_pause() -> void:
+	if is_dead:
+		return
+	if not pause_menu:
+		return
+	
+	if pause_menu.is_active:
+		pause_menu.close()
+		if laser_pointer:
+			laser_pointer.set_active(false)
+	else:
+		pause_menu.open(xr_camera.global_transform)
+		if laser_pointer:
+			laser_pointer.set_active(true)
+
+func take_damage(amount: int, hit_source_pos: Vector3 = Vector3.ZERO) -> void:
+	if is_dead or invincible_timer > 0.0:
+		return
+
+	current_health = maxi(0, current_health - amount)
+	if energy_gauge:
+		energy_gauge.set_health(current_health, max_health)
+
+	invincible_timer = invincibility_duration
+	_aura_timer = 0.6
+	if electric_aura_left:
+		electric_aura_left.emitting = true
+	if electric_aura_right:
+		electric_aura_right.emitting = true
+
+	# Directional shove away from hit source
+	var hit_dir := global_position - hit_source_pos
+	hit_dir.y = 0.0
+	if hit_dir == Vector3.ZERO:
+		hit_dir = -global_transform.basis.z
+	hit_dir = hit_dir.normalized()
+
+	velocity.x = hit_dir.x * knockback_force
+	velocity.z = hit_dir.z * knockback_force
+	velocity.y = 2.5
+	is_dashing = false
+	is_dash_jumping = false
+
+	_trigger_haptic(0.9, 0.25)
+
+	if current_health <= 0:
+		die()
+
+func die() -> void:
+	if is_dead:
+		return
+	is_dead = true
+	current_health = 0
+	if energy_gauge:
+		energy_gauge.set_health(0, max_health)
+
+	velocity = Vector3.ZERO
+	is_dashing = false
+	is_dash_jumping = false
+	is_wall_sliding = false
+
+	# Spawn white spark explosion vortex
+	if DEATH_VORTEX_SCENE:
+		var vortex = DEATH_VORTEX_SCENE.instantiate()
+		var p := get_tree().current_scene if get_tree().current_scene else get_parent()
+		p.add_child(vortex)
+		vortex.global_position = global_position + Vector3(0, 0.9, 0)
+
+	if whiteout_quad:
+		whiteout_quad.visible = true
+		if whiteout_quad.material_override is StandardMaterial3D:
+			whiteout_quad.material_override.albedo_color.a = 0.0
+
+	if laser_pointer:
+		laser_pointer.set_active(true)
+
+func _process(delta: float) -> void:
+	# Invincibility & Electric Aura Timers
+	if invincible_timer > 0.0:
+		invincible_timer -= delta
+		# I-frame visual flicker on arms
+		var flicker: bool = fmod(invincible_timer, 0.12) < 0.06
+		if left_hand_offset:
+			left_hand_offset.visible = flicker
+		if right_hand_offset:
+			right_hand_offset.visible = flicker
+		if invincible_timer <= 0.0:
+			if left_hand_offset: left_hand_offset.visible = true
+			if right_hand_offset: right_hand_offset.visible = true
+	
+	if _aura_timer > 0.0:
+		_aura_timer -= delta
+		if _aura_timer <= 0.0:
+			if electric_aura_left: electric_aura_left.emitting = false
+			if electric_aura_right: electric_aura_right.emitting = false
+
+	# Death Screen Whiteout Transition
+	if is_dead and _whiteout_progress < 1.0:
+		_whiteout_progress += delta / 1.2
+		var a: float = clampf(_whiteout_progress, 0.0, 1.0)
+		if whiteout_quad and whiteout_quad.material_override is StandardMaterial3D:
+			whiteout_quad.material_override.albedo_color.a = a
+		
+		if _whiteout_progress >= 1.0 and game_over_menu and not game_over_menu.is_active:
+			game_over_menu.open(xr_camera.global_transform)
+
 func _try_jump() -> bool:
+	if is_dead:
+		return false
 	if is_on_floor():
 		velocity.y = jump_velocity
 		is_wall_sliding = false
 		if is_dashing:
-			# Mega Man X Dash Jump: Carry full dash momentum through the entire jump arc!
 			is_dash_jumping = true
 			_dash_jump_direction = _dash_direction
 			is_dashing = false
@@ -119,7 +261,6 @@ func _try_jump() -> bool:
 			is_dash_jumping = false
 		return true
 	elif is_wall_sliding or is_on_wall() or _wall_coyote_timer > 0.0:
-		# Mega Man X Wall Kick!
 		var kick_normal := _last_wall_normal
 		if is_on_wall():
 			kick_normal = get_wall_normal()
@@ -139,10 +280,11 @@ func _try_jump() -> bool:
 	return false
 
 func _try_dash() -> bool:
+	if is_dead:
+		return false
 	if _dash_cooldown_timer > 0.0 or is_dashing:
 		return false
 	
-	# No air-dashing: player must be on the floor or wall-sliding
 	if not is_on_floor() and not is_wall_sliding and not is_on_wall():
 		return false
 	
@@ -170,6 +312,8 @@ func _trigger_haptic(amplitude: float, duration: float) -> void:
 		right_controller.trigger_haptic_pulse("haptic", 100.0, amplitude, duration, 0.0)
 
 func _get_intended_move_direction() -> Vector3:
+	if is_dead:
+		return Vector3.ZERO
 	var input_vec := Vector2.ZERO
 	if is_xr_active and left_controller:
 		var thumbstick: Vector2 = left_controller.get_vector2("primary")
@@ -199,6 +343,11 @@ func _get_intended_move_direction() -> Vector3:
 	return (right * input_vec.x + forward * input_vec.y).normalized()
 
 func _physics_process(delta: float) -> void:
+	if is_dead:
+		velocity.y -= gravity * delta
+		move_and_slide()
+		return
+
 	# Timers
 	if _wall_coyote_timer > 0.0:
 		_wall_coyote_timer -= delta
@@ -244,7 +393,6 @@ func _physics_process(delta: float) -> void:
 		if velocity.y < 0.0:
 			velocity.y = 0.0
 	elif is_wall_sliding:
-		# Controlled Mega Man X wall slide
 		velocity.y = move_toward(velocity.y, -wall_slide_speed, wall_slide_gravity * delta)
 		if velocity.y < -wall_slide_speed:
 			velocity.y = -wall_slide_speed
@@ -260,7 +408,6 @@ func _physics_process(delta: float) -> void:
 		velocity.x = _dash_direction.x * dash_speed
 		velocity.z = _dash_direction.z * dash_speed
 	elif is_dash_jumping and not on_floor and not on_wall:
-		# Maintain full dash speed throughout the entire jump arc without air drag!
 		var move_dir := _get_intended_move_direction()
 		if move_dir != Vector3.ZERO:
 			velocity.x = move_toward(velocity.x, move_dir.x * dash_speed, dash_speed * delta * 2.0)
@@ -269,10 +416,8 @@ func _physics_process(delta: float) -> void:
 			velocity.x = _dash_jump_direction.x * dash_speed
 			velocity.z = _dash_jump_direction.z * dash_speed
 	elif _wall_kick_timer > 0.0:
-		# During initial kick arc, preserve explosive outward impulse
 		var move_dir := _get_intended_move_direction()
 		if move_dir != Vector3.ZERO:
-			# Lightly blend in steer direction
 			velocity.x = move_toward(velocity.x, move_dir.x * move_speed, move_speed * delta * 2.0)
 			velocity.z = move_toward(velocity.z, move_dir.z * move_speed, move_speed * delta * 2.0)
 	else:
@@ -311,3 +456,12 @@ func _physics_process(delta: float) -> void:
 	_prev_e_pressed = e_pressed
 
 	move_and_slide()
+
+	# Check contact with Enemy / Hazard Dummies
+	if invincible_timer <= 0.0:
+		for i in range(get_slide_collision_count()):
+			var col := get_slide_collision(i)
+			var collider := col.get_collider()
+			if collider is TargetDummy or collider is ArmoredTargetDummy or (collider and collider.get("is_enemy") == true):
+				take_damage(1, col.get_position())
+				break
