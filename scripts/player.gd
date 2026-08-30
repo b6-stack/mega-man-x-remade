@@ -221,15 +221,6 @@ func _process(delta: float) -> void:
 	# Invincibility & Electric Aura Timers
 	if invincible_timer > 0.0:
 		invincible_timer -= delta
-		# I-frame visual flicker on arms
-		var flicker: bool = fmod(invincible_timer, 0.12) < 0.06
-		if left_hand_offset:
-			left_hand_offset.visible = flicker
-		if right_hand_offset:
-			right_hand_offset.visible = flicker
-		if invincible_timer <= 0.0:
-			if left_hand_offset: left_hand_offset.visible = true
-			if right_hand_offset: right_hand_offset.visible = true
 	
 	if _aura_timer > 0.0:
 		_aura_timer -= delta
@@ -344,8 +335,13 @@ func _get_intended_move_direction() -> Vector3:
 
 func _physics_process(delta: float) -> void:
 	if is_dead:
-		velocity.y -= gravity * delta
-		move_and_slide()
+		velocity = Vector3.ZERO
+		return
+
+	# Fall into bottomless pit / Kill plane check
+	if global_position.y < -8.0 and not is_dead:
+		velocity = Vector3.ZERO
+		die()
 		return
 
 	# Timers

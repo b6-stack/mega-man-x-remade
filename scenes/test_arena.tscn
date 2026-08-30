@@ -146,6 +146,9 @@ size = Vector3(3, 1.4, 0.8)
 [sub_resource type="BoxShape3D" id="BoxShape3D_cover"]
 size = Vector3(3, 1.4, 0.8)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_kill_plane"]
+size = Vector3(300, 4, 300)
+
 [node name="TestArena" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -378,3 +381,11 @@ transform = Transform3D(0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, 0.258819, 
 
 [node name="VRPlayer" parent="." instance=ExtResource("1_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="KillPlane" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8, 0)
+collision_layer = 16
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KillPlane"]
+shape = SubResource("BoxShape3D_kill_plane")
