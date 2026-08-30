@@ -44,14 +44,14 @@ func open(cam_transform: Transform3D) -> void:
 
 func _on_restart_pressed() -> void:
 	emit_signal("restarted")
-	get_tree().reload_current_scene()
+	get_tree().call_deferred("reload_current_scene")
 
 func _on_quit_pressed() -> void:
 	emit_signal("quitted")
-	get_tree().quit()
+	get_tree().call_deferred("quit")
 
 func handle_pointer_click(uv: Vector2) -> void:
-	if not sub_viewport:
+	if not sub_viewport or not is_inside_tree() or not sub_viewport.is_inside_tree():
 		return
 	var vp_size: Vector2 = sub_viewport.size
 	var pixel_pos := Vector2(uv.x * vp_size.x, uv.y * vp_size.y)
@@ -63,9 +63,10 @@ func handle_pointer_click(uv: Vector2) -> void:
 	ev_press.pressed = true
 	sub_viewport.push_input(ev_press)
 
-	var ev_release := InputEventMouseButton.new()
-	ev_release.position = pixel_pos
-	ev_release.global_position = pixel_pos
-	ev_release.button_index = MOUSE_BUTTON_LEFT
-	ev_release.pressed = false
-	sub_viewport.push_input(ev_release)
+	if is_inside_tree() and sub_viewport and sub_viewport.is_inside_tree():
+		var ev_release := InputEventMouseButton.new()
+		ev_release.position = pixel_pos
+		ev_release.global_position = pixel_pos
+		ev_release.button_index = MOUSE_BUTTON_LEFT
+		ev_release.pressed = false
+		sub_viewport.push_input(ev_release)

@@ -108,8 +108,8 @@ spread = 180.0
 initial_velocity_min = 0.5
 initial_velocity_max = 1.5
 gravity = Vector3(0, 1.0, 0)
-scale_min = 0.02
-scale_max = 0.05
+scale_min = 0.06
+scale_max = 0.12
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aura_p"]
 shading_mode = 0
@@ -120,8 +120,8 @@ emission_energy_multiplier = 8.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_aura_p"]
 material = SubResource("StandardMaterial3D_aura_p")
-radius = 0.012
-height = 0.024
+radius = 0.035
+height = 0.07
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_buster_rear_swell"]
 material = SubResource("StandardMaterial3D_armor_cyan")

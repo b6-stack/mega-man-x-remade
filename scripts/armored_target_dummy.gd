@@ -15,7 +15,7 @@ func _process(delta: float) -> void:
 			if shield_plate:
 				shield_plate.material_override = null
 
-func take_damage(amount: float, _hit_pos: Vector3 = Vector3.ZERO, _hit_normal: Vector3 = Vector3.ZERO) -> bool:
+func take_damage(_amount: float, _hit_pos: Vector3 = Vector3.ZERO, _hit_normal: Vector3 = Vector3.ZERO) -> bool:
 	# Armored: Blocks ALL levels of buster shots (Level 1, Level 2, Level 3)
 	_flash_shield_deflect()
 	return false

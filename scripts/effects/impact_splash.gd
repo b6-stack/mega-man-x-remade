@@ -2,7 +2,7 @@ extends Node3D
 class_name ImpactSplash
 
 @export var charge_level: int = 1
-@export var duration: float = 0.45
+@export var duration: float = 0.48
 
 @onready var particles: GPUParticles3D = $GPUParticles3D
 @onready var shockwave_ring: MeshInstance3D = $ShockwaveRing
@@ -35,57 +35,58 @@ func _face_camera() -> void:
 
 func _setup_effect() -> void:
 	var col: Color = Color(1.0, 0.92, 0.15)
-	var scale_mult: float = 0.5
-	var part_count: int = 24
-	var light_range: float = 2.2
+	var scale_mult: float = 0.6
+	var part_count: int = 26
+	var light_range: float = 3.0
 	
 	match charge_level:
 		1:
 			col = Color(1.0, 0.92, 0.12)
-			scale_mult = 0.5
-			part_count = 22
-			light_range = 2.2
+			scale_mult = 0.6
+			part_count = 24
+			light_range = 3.0
 		2:
 			col = Color(0.15, 1.0, 0.4)
-			scale_mult = 0.8
-			part_count = 36
-			light_range = 3.4
+			scale_mult = 0.95
+			part_count = 38
+			light_range = 4.2
 		3:
 			col = Color(0.1, 0.8, 1.0)
-			scale_mult = 1.4
-			part_count = 55
-			light_range = 5.0
+			scale_mult = 1.55
+			part_count = 58
+			light_range = 6.0
 
 	if light:
 		light.light_color = col
 		light.omni_range = light_range
-		light.light_energy = 5.0 * (scale_mult / 0.5)
+		light.light_energy = 6.0 * (scale_mult / 0.6)
 
 	if particles:
 		particles.amount = part_count
 		var p_mat := ParticleProcessMaterial.new()
 		p_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-		p_mat.emission_sphere_radius = 0.04 * scale_mult
+		p_mat.emission_sphere_radius = 0.06 * scale_mult
 		p_mat.direction = Vector3(0, 0, 1)
 		p_mat.spread = 75.0
-		p_mat.initial_velocity_min = 2.5 * scale_mult
-		p_mat.initial_velocity_max = 6.0 * scale_mult
-		p_mat.gravity = Vector3(0, -4.0, 0)
-		p_mat.scale_min = 0.04 * scale_mult
-		p_mat.scale_max = 0.08 * scale_mult
+		p_mat.initial_velocity_min = 2.8 * scale_mult
+		p_mat.initial_velocity_max = 6.5 * scale_mult
+		p_mat.gravity = Vector3(0, -4.5, 0)
+		p_mat.scale_min = 0.10 * scale_mult
+		p_mat.scale_max = 0.20 * scale_mult
 		p_mat.damping_min = 3.0
 		p_mat.damping_max = 6.0
 		particles.process_material = p_mat
 
+		# Really chunky glowing plasma spheres
 		var draw_mesh := SphereMesh.new()
-		draw_mesh.radius = 0.03 * scale_mult
-		draw_mesh.height = 0.06 * scale_mult
+		draw_mesh.radius = 0.06 * scale_mult
+		draw_mesh.height = 0.12 * scale_mult
 		var draw_mat := StandardMaterial3D.new()
 		draw_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		draw_mat.albedo_color = col
 		draw_mat.emission_enabled = true
 		draw_mat.emission = col
-		draw_mat.emission_energy_multiplier = 7.0
+		draw_mat.emission_energy_multiplier = 8.0
 		draw_mesh.material = draw_mat
 		particles.draw_pass_1 = draw_mesh
 
@@ -101,7 +102,7 @@ func _setup_effect() -> void:
 		ring_mat.emission = col
 		ring_mat.emission_energy_multiplier = 6.0
 		shockwave_ring.material_override = ring_mat
-		shockwave_ring.scale = Vector3(0.1, 0.1, 0.1) * scale_mult
+		shockwave_ring.scale = Vector3(0.12, 0.12, 0.12) * scale_mult
 
 	if star_flare:
 		var flare_mat := StandardMaterial3D.new()
@@ -112,29 +113,29 @@ func _setup_effect() -> void:
 		flare_mat.emission = col
 		flare_mat.emission_energy_multiplier = 9.0
 		star_flare.material_override = flare_mat
-		star_flare.scale = Vector3(0.25, 0.25, 0.25) * scale_mult
+		star_flare.scale = Vector3(0.35, 0.35, 0.35) * scale_mult
 
 func _process(delta: float) -> void:
 	_timer += delta
 	var progress: float = clampf(_timer / duration, 0.0, 1.0)
 	
 	if shockwave_ring:
-		var target_scale: float = 0.6
-		if charge_level == 2: target_scale = 1.0
-		elif charge_level == 3: target_scale = 1.8
-		var s: float = lerpf(0.1, target_scale, ease(progress, 0.4))
-		shockwave_ring.scale = Vector3(s, s, 0.05)
+		var target_scale: float = 0.75
+		if charge_level == 2: target_scale = 1.25
+		elif charge_level == 3: target_scale = 2.1
+		var s: float = lerpf(0.12, target_scale, ease(progress, 0.4))
+		shockwave_ring.scale = Vector3(s, s, 0.06)
 		if shockwave_ring.material_override is StandardMaterial3D:
 			var rmat: StandardMaterial3D = shockwave_ring.material_override
 			rmat.albedo_color.a = (1.0 - progress) * 0.9
 
 	if star_flare:
-		var s: float = (1.0 - progress) * (0.4 if charge_level == 1 else (0.7 if charge_level == 2 else 1.25))
+		var s: float = (1.0 - progress) * (0.5 if charge_level == 1 else (0.85 if charge_level == 2 else 1.5))
 		star_flare.scale = Vector3(s, s, s)
 		star_flare.rotate_z(delta * 12.0)
 	
 	if light:
-		light.light_energy = (1.0 - progress) * 5.0
+		light.light_energy = (1.0 - progress) * 6.0
 	
 	if _timer >= duration:
 		queue_free()
