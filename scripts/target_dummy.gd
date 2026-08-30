@@ -3,6 +3,7 @@ class_name TargetDummy
 
 @export var max_health: float = 6.0
 @export var respawn_time: float = 3.0
+@export var is_armored: bool = false
 
 @onready var mesh_instance: MeshInstance3D = $MeshInstance3D
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
@@ -22,7 +23,7 @@ func _process(delta: float) -> void:
 	if _flash_timer > 0.0:
 		_flash_timer -= delta
 		if _flash_timer <= 0.0 and not _is_destroyed:
-			if mesh_instance and _orig_material:
+			if mesh_instance:
 				mesh_instance.material_override = null
 
 	if _is_destroyed:
@@ -30,9 +31,12 @@ func _process(delta: float) -> void:
 		if _respawn_timer <= 0.0:
 			_respawn()
 
-func take_damage(amount: float) -> void:
+func take_damage(amount: float, _hit_pos: Vector3 = Vector3.ZERO, _hit_normal: Vector3 = Vector3.ZERO) -> bool:
 	if _is_destroyed:
-		return
+		return false
+
+	if is_armored:
+		return false
 
 	current_health -= amount
 	_flash_hit()
@@ -40,15 +44,17 @@ func take_damage(amount: float) -> void:
 	if current_health <= 0:
 		_destroy()
 
+	return true
+
 func _flash_hit() -> void:
-	_flash_timer = 0.15
+	_flash_timer = 0.10
 	if mesh_instance:
 		var flash_mat := StandardMaterial3D.new()
 		flash_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		flash_mat.albedo_color = Color(1.0, 1.0, 1.0, 1.0)
 		flash_mat.emission_enabled = true
-		flash_mat.emission = Color(1.0, 0.4, 0.4)
-		flash_mat.emission_energy_multiplier = 4.0
+		flash_mat.emission = Color(1.0, 1.0, 1.0, 1.0)
+		flash_mat.emission_energy_multiplier = 6.0
 		mesh_instance.material_override = flash_mat
 
 func _destroy() -> void:

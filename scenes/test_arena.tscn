@@ -356,6 +356,7 @@ transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 
 
 [node name="TargetDummy_Right" parent="Dummies" instance=ExtResource("2_dummy")]
 transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 3, 0, -4)
+is_armored = true
 
 [node name="TargetDummy_Step1" parent="Dummies" instance=ExtResource("2_dummy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, -6)

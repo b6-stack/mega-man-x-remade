@@ -152,6 +152,9 @@ func _setup_particles(color: Color, p_scale: float, p_amount: int, p_lifetime: f
 	draw_mesh.material = draw_mat
 	particles.draw_pass_1 = draw_mesh
 
+const IMPACT_SPLASH_SCENE: PackedScene = preload("res://scenes/effects/impact_splash.tscn")
+const DEFLECT_SPARKS_SCENE: PackedScene = preload("res://scenes/effects/deflect_sparks.tscn")
+
 func _physics_process(delta: float) -> void:
 	global_position += -global_transform.basis.z * speed * delta
 	
@@ -160,13 +163,52 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 func _on_body_entered(body: Node3D) -> void:
-	if body.has_method("take_damage"):
-		body.take_damage(damage)
-	queue_free()
+	_handle_hit(body)
 
 func _on_area_entered(area: Area3D) -> void:
-	if area.has_method("take_damage"):
-		area.take_damage(damage)
-	elif area.get_parent() and area.get_parent().has_method("take_damage"):
-		area.get_parent().take_damage(damage)
+	_handle_hit(area)
+
+func _handle_hit(target: Node3D) -> void:
+	var hit_pos: Vector3 = global_position
+	var hit_normal: Vector3 = global_transform.basis.z
+	var damage_dealt := false
+	
+	var damage_target: Node = target
+	if not damage_target.has_method("take_damage") and target.get_parent() and target.get_parent().has_method("take_damage"):
+		damage_target = target.get_parent()
+	
+	if damage_target.has_method("take_damage"):
+		var result = damage_target.take_damage(damage, hit_pos, hit_normal)
+		if result is bool:
+			damage_dealt = result
+		else:
+			damage_dealt = true
+	
+	if damage_dealt:
+		_spawn_impact_splash(hit_pos, hit_normal)
+	else:
+		_spawn_deflect_sparks(hit_pos, hit_normal)
+	
 	queue_free()
+
+func _spawn_impact_splash(pos: Vector3, normal: Vector3) -> void:
+	if not IMPACT_SPLASH_SCENE:
+		return
+	var splash = IMPACT_SPLASH_SCENE.instantiate()
+	if splash:
+		var target_parent := get_tree().current_scene if get_tree().current_scene else get_parent()
+		target_parent.add_child(splash)
+		splash.global_position = pos
+		if splash.has_method("setup"):
+			splash.setup(charge_level, normal)
+
+func _spawn_deflect_sparks(pos: Vector3, normal: Vector3) -> void:
+	if not DEFLECT_SPARKS_SCENE:
+		return
+	var sparks = DEFLECT_SPARKS_SCENE.instantiate()
+	if sparks:
+		var target_parent := get_tree().current_scene if get_tree().current_scene else get_parent()
+		target_parent.add_child(sparks)
+		sparks.global_position = pos
+		if sparks.has_method("setup"):
+			sparks.setup(normal)
