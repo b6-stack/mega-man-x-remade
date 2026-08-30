@@ -88,20 +88,20 @@ func _update_shot_properties() -> void:
 				_setup_particles(Color(0.2, 1.0, 0.45), 0.10, 32, 0.22)
 
 		3:
-			# Level 3 (Charged): 0.25m radius x 0.50m length capsule, ultra-chunky dense blue plasma trail
+			# Level 3 (Charged): 0.375m radius x 0.75m length capsule (150% enlarged), massive dense blue plasma trail
 			damage = 5.0
 			speed = 30.0
 			scale = Vector3(1.0, 1.0, 1.0)
 			if mesh_instance:
 				var cap := CapsuleMesh.new()
-				cap.radius = 0.25
-				cap.height = 0.50
+				cap.radius = 0.375
+				cap.height = 0.75
 				mesh_instance.mesh = cap
 				mesh_instance.rotation_degrees = Vector3(90, 0, 0)
 			if collision_shape:
 				var shape := CapsuleShape3D.new()
-				shape.radius = 0.25
-				shape.height = 0.50
+				shape.radius = 0.375
+				shape.height = 0.75
 				collision_shape.shape = shape
 				collision_shape.rotation_degrees = Vector3(90, 0, 0)
 
@@ -110,12 +110,12 @@ func _update_shot_properties() -> void:
 			mat.emission_energy_multiplier = 7.0
 			if light:
 				light.light_color = Color(0.2, 0.65, 1.0)
-				light.light_energy = 5.0
-				light.omni_range = 4.5
+				light.light_energy = 6.5
+				light.omni_range = 6.5
 			if particles:
 				particles.emitting = true
 				particles.visible = true
-				_setup_particles(Color(0.15, 0.75, 1.0), 0.22, 48, 0.28)
+				_setup_particles(Color(0.15, 0.75, 1.0), 0.33, 56, 0.32)
 
 	if mesh_instance:
 		mesh_instance.material_override = mat
