@@ -39,6 +39,7 @@ enum ControllerProfile {
 var is_xr_active: bool = false
 var is_wall_sliding: bool = false
 var is_dashing: bool = false
+var is_dash_jumping: bool = false
 
 var _can_snap_turn: bool = true
 var _prev_q_pressed: bool = false
@@ -51,6 +52,7 @@ var _last_wall_normal: Vector3 = Vector3.ZERO
 var _dash_timer: float = 0.0
 var _dash_cooldown_timer: float = 0.0
 var _dash_direction: Vector3 = Vector3.ZERO
+var _dash_jump_direction: Vector3 = Vector3.ZERO
 
 func _ready() -> void:
 	_apply_controller_profile()
@@ -108,6 +110,13 @@ func _try_jump() -> bool:
 	if is_on_floor():
 		velocity.y = jump_velocity
 		is_wall_sliding = false
+		if is_dashing:
+			# Mega Man X Dash Jump: Carry full dash momentum through the entire jump arc!
+			is_dash_jumping = true
+			_dash_jump_direction = _dash_direction
+			is_dashing = false
+		else:
+			is_dash_jumping = false
 		return true
 	elif is_wall_sliding or is_on_wall() or _wall_coyote_timer > 0.0:
 		# Mega Man X Wall Kick!
@@ -122,6 +131,8 @@ func _try_jump() -> bool:
 		_wall_kick_timer = wall_kick_lock_time
 		_wall_coyote_timer = 0.0
 		is_wall_sliding = false
+		is_dash_jumping = false
+		is_dashing = false
 		
 		_trigger_haptic(0.6, 0.08)
 		return true
@@ -129,6 +140,10 @@ func _try_jump() -> bool:
 
 func _try_dash() -> bool:
 	if _dash_cooldown_timer > 0.0 or is_dashing:
+		return false
+	
+	# No air-dashing: player must be on the floor or wall-sliding
+	if not is_on_floor() and not is_wall_sliding and not is_on_wall():
 		return false
 	
 	var move_dir := _get_intended_move_direction()
@@ -209,6 +224,9 @@ func _physics_process(delta: float) -> void:
 	var on_wall := is_on_wall()
 	var on_floor := is_on_floor()
 
+	if (on_floor and velocity.y <= 0.0) or on_wall:
+		is_dash_jumping = false
+
 	if on_wall and not on_floor:
 		_last_wall_normal = get_wall_normal()
 		_wall_coyote_timer = wall_coyote_time
@@ -237,10 +255,19 @@ func _physics_process(delta: float) -> void:
 	if wall_slide_particles:
 		wall_slide_particles.emitting = is_wall_sliding
 
-	# Horizontal Movement (Steering & Dashing)
+	# Horizontal Movement (Steering, Dashing, and Dash-Jumping)
 	if is_dashing:
 		velocity.x = _dash_direction.x * dash_speed
 		velocity.z = _dash_direction.z * dash_speed
+	elif is_dash_jumping and not on_floor and not on_wall:
+		# Maintain full dash speed throughout the entire jump arc without air drag!
+		var move_dir := _get_intended_move_direction()
+		if move_dir != Vector3.ZERO:
+			velocity.x = move_toward(velocity.x, move_dir.x * dash_speed, dash_speed * delta * 2.0)
+			velocity.z = move_toward(velocity.z, move_dir.z * dash_speed, dash_speed * delta * 2.0)
+		else:
+			velocity.x = _dash_jump_direction.x * dash_speed
+			velocity.z = _dash_jump_direction.z * dash_speed
 	elif _wall_kick_timer > 0.0:
 		# During initial kick arc, preserve explosive outward impulse
 		var move_dir := _get_intended_move_direction()

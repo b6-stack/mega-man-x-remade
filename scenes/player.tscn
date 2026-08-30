@@ -84,7 +84,7 @@ roughness = 0.3
 
 [sub_resource type="BoxMesh" id="BoxMesh_gauge_back"]
 material = SubResource("StandardMaterial3D_gauge_back")
-size = Vector3(0.005, 0.058, 0.018)
+size = Vector3(0.016, 0.004, 0.072)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gauge_yellow"]
 shading_mode = 0
@@ -95,7 +95,7 @@ emission_energy_multiplier = 3.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_gauge_segment"]
 material = SubResource("StandardMaterial3D_gauge_yellow")
-size = Vector3(0.006, 0.0065, 0.012)
+size = Vector3(0.012, 0.003, 0.0035)
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_charge"]
 emission_shape = 1
@@ -231,33 +231,41 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 
 mesh = SubResource("CylinderMesh_gauntlet_front_taper")
 
 [node name="EnergyGauge" type="Node3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.038, 0, 0.008)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.056, -0.035)
 
 [node name="GaugeBack" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
 mesh = SubResource("BoxMesh_gauge_back")
 
 [node name="Segment1" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, 0.022, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0025, 0.020)
 mesh = SubResource("BoxMesh_gauge_segment")
 
 [node name="Segment2" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, 0.013, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0025, 0.014)
 mesh = SubResource("BoxMesh_gauge_segment")
 
 [node name="Segment3" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, 0.004, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0025, 0.008)
 mesh = SubResource("BoxMesh_gauge_segment")
 
 [node name="Segment4" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, -0.005, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0025, 0.002)
 mesh = SubResource("BoxMesh_gauge_segment")
 
 [node name="Segment5" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, -0.014, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0025, -0.004)
 mesh = SubResource("BoxMesh_gauge_segment")
 
 [node name="Segment6" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, -0.023, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0025, -0.010)
+mesh = SubResource("BoxMesh_gauge_segment")
+
+[node name="Segment7" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0025, -0.016)
+mesh = SubResource("BoxMesh_gauge_segment")
+
+[node name="Segment8" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset/EnergyGauge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0025, -0.022)
 mesh = SubResource("BoxMesh_gauge_segment")
 
 [node name="RoboticHand" type="Node3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
