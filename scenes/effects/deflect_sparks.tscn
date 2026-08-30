@@ -1,31 +1,43 @@
-[gd_scene load_steps=6 format=3 uid="uid://b0deflectsparks"]
+[gd_scene load_steps=8 format=3 uid="uid://b0deflectsparks"]
 
 [ext_resource type="Script" path="res://scripts/effects/deflect_sparks.gd" id="1_deflect"]
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_sparks"]
 emission_shape = 1
-emission_sphere_radius = 0.02
+emission_sphere_radius = 0.04
 direction = Vector3(0, 0, 1)
-spread = 60.0
-initial_velocity_min = 4.0
-initial_velocity_max = 9.0
-gravity = Vector3(0, -9.8, 0)
-scale_min = 0.015
-scale_max = 0.04
-damping_min = 2.0
-damping_max = 5.0
+spread = 55.0
+initial_velocity_min = 6.0
+initial_velocity_max = 14.0
+gravity = Vector3(0, -14.0, 0)
+scale_min = 0.04
+scale_max = 0.09
+damping_min = 1.0
+damping_max = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark_mat"]
 shading_mode = 0
-albedo_color = Color(1.0, 0.85, 0.3, 1)
+albedo_color = Color(1.0, 0.9, 0.4, 1)
 emission_enabled = true
-emission = Color(1.0, 0.8, 0.2, 1)
-emission_energy_multiplier = 8.0
+emission = Color(1.0, 0.85, 0.25, 1)
+emission_energy_multiplier = 10.0
 
-[sub_resource type="SphereMesh" id="SphereMesh_spark_pass"]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_spark_needle"]
 material = SubResource("StandardMaterial3D_spark_mat")
-radius = 0.015
-height = 0.03
+radius = 0.018
+height = 0.10
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ping"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 0.9, 1)
+emission_enabled = true
+emission = Color(1.0, 0.9, 0.4, 1)
+emission_energy_multiplier = 12.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_ping"]
+material = SubResource("StandardMaterial3D_ping")
+size = Vector3(0.04, 0.5, 0.04)
 
 [node name="DeflectSparks" type="Node3D"]
 top_level = true
@@ -33,14 +45,22 @@ script = ExtResource("1_deflect")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
 emitting = false
-amount = 28
-lifetime = 0.25
+amount = 45
+lifetime = 0.38
 one_shot = true
-explosiveness = 0.95
+explosiveness = 0.96
 process_material = SubResource("ParticleProcessMaterial_sparks")
-draw_pass_1 = SubResource("SphereMesh_spark_pass")
+draw_pass_1 = SubResource("CapsuleMesh_spark_needle")
+
+[node name="PingFlash" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 0, 0, 0.02)
+mesh = SubResource("BoxMesh_ping")
+
+[node name="PingFlash2" type="MeshInstance3D" parent="PingFlash"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_ping")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-light_color = Color(1.0, 0.85, 0.3, 1)
-light_energy = 5.0
-omni_range = 1.8
+light_color = Color(1.0, 0.9, 0.4, 1)
+light_energy = 9.0
+omni_range = 3.5
