@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/target_dummy.tscn" id="2_dummy"]
+[ext_resource type="PackedScene" path="res://scenes/armored_target_dummy.tscn" id="3_armored_dummy"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.12, 0.25, 0.45, 1)
@@ -354,9 +355,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3)
 [node name="TargetDummy_Left" parent="Dummies" instance=ExtResource("2_dummy")]
 transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -3, 0, -4)
 
-[node name="TargetDummy_Right" parent="Dummies" instance=ExtResource("2_dummy")]
+[node name="ArmoredTargetDummy_Right" parent="Dummies" instance=ExtResource("3_armored_dummy")]
 transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 3, 0, -4)
-is_armored = true
 
 [node name="TargetDummy_Step1" parent="Dummies" instance=ExtResource("2_dummy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, -6)

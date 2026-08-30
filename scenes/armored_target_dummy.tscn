@@ -1,0 +1,61 @@
+[gd_scene load_steps=8 format=3 uid="uid://b0armoreddummy"]
+
+[ext_resource type="Script" path="res://scripts/armored_target_dummy.gd" id="1_armored"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dummy"]
+size = Vector3(0.9, 1.8, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_armored_body"]
+albedo_color = Color(0.12, 0.14, 0.18, 1)
+metallic = 0.9
+roughness = 0.25
+
+[sub_resource type="BoxMesh" id="BoxMesh_armored_body"]
+material = SubResource("StandardMaterial3D_armored_body")
+size = Vector3(0.9, 1.8, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_shield_plate"]
+albedo_color = Color(0.85, 0.65, 0.15, 1)
+metallic = 0.95
+roughness = 0.18
+emission_enabled = true
+emission = Color(0.9, 0.6, 0.1, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_shield_plate"]
+material = SubResource("StandardMaterial3D_shield_plate")
+size = Vector3(0.75, 1.4, 0.08)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_emblem"]
+shading_mode = 0
+albedo_color = Color(0.2, 0.85, 1.0, 1)
+emission_enabled = true
+emission = Color(0.2, 0.85, 1.0, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_emblem"]
+material = SubResource("StandardMaterial3D_emblem")
+top_radius = 0.12
+bottom_radius = 0.12
+height = 0.04
+
+[node name="ArmoredTargetDummy" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 2
+script = ExtResource("1_armored")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("BoxShape3D_dummy")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("BoxMesh_armored_body")
+
+[node name="ShieldPlate" type="MeshInstance3D" parent="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0.46)
+mesh = SubResource("BoxMesh_shield_plate")
+
+[node name="ShieldEmblem" type="MeshInstance3D" parent="MeshInstance3D/ShieldPlate"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.2, 0.05)
+mesh = SubResource("CylinderMesh_emblem")
