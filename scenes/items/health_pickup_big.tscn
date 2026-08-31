@@ -3,42 +3,42 @@
 [ext_resource type="Script" path="res://scripts/items/health_pickup.gd" id="1_pickup"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pickup"]
-size = Vector3(0.28, 0.45, 0.28)
+size = Vector3(0.44, 0.24, 0.24)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_case_metal"]
-albedo_color = Color(0.18, 0.22, 0.28, 1)
-metallic = 0.85
+albedo_color = Color(0.72, 0.75, 0.80, 1)
+metallic = 0.92
 roughness = 0.25
 
 [sub_resource type="BoxMesh" id="BoxMesh_cap"]
 material = SubResource("StandardMaterial3D_case_metal")
-size = Vector3(0.24, 0.04, 0.24)
+size = Vector3(0.04, 0.20, 0.20)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_handle"]
-albedo_color = Color(0.85, 0.7, 0.15, 1)
-metallic = 0.9
+albedo_color = Color(0.80, 0.83, 0.88, 1)
+metallic = 0.95
 roughness = 0.2
 
 [sub_resource type="BoxMesh" id="BoxMesh_handle_post"]
 material = SubResource("StandardMaterial3D_handle")
-size = Vector3(0.016, 0.06, 0.016)
+size = Vector3(0.05, 0.016, 0.016)
 
 [sub_resource type="BoxMesh" id="BoxMesh_handle_bar"]
 material = SubResource("StandardMaterial3D_handle")
-size = Vector3(0.016, 0.016, 0.136)
+size = Vector3(0.016, 0.106, 0.016)
 
 [sub_resource type="BoxMesh" id="BoxMesh_corner_strut"]
 material = SubResource("StandardMaterial3D_case_metal")
-size = Vector3(0.024, 0.20, 0.024)
+size = Vector3(0.20, 0.02, 0.02)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_glass"]
 transparency = 1
-albedo_color = Color(0.5, 0.85, 1, 0.22)
+albedo_color = Color(0.6, 0.9, 1, 0.2)
 roughness = 0.1
 
 [sub_resource type="BoxMesh" id="BoxMesh_glass"]
 material = SubResource("StandardMaterial3D_glass")
-size = Vector3(0.20, 0.20, 0.20)
+size = Vector3(0.20, 0.16, 0.16)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_big_core"]
 resource_local_to_scene = true
@@ -50,15 +50,15 @@ emission_energy_multiplier = 8.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_big_core"]
 material = SubResource("StandardMaterial3D_big_core")
-radius = 0.075
-height = 0.15
+radius = 0.07
+height = 0.14
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_spark"]
 emission_shape = 1
-emission_sphere_radius = 0.12
-gravity = Vector3(0, 0.3, 0)
-initial_velocity_min = 0.15
-initial_velocity_max = 0.4
+emission_sphere_radius = 0.10
+gravity = Vector3(0, 0.25, 0)
+initial_velocity_min = 0.12
+initial_velocity_max = 0.35
 scale_min = 0.6
 scale_max = 1.2
 
@@ -85,46 +85,59 @@ shape = SubResource("BoxShape3D_pickup")
 
 [node name="Visuals" type="Node3D" parent="."]
 
-[node name="BaseCap" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.12, 0)
+[node name="LeftCap" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0, 0)
 mesh = SubResource("BoxMesh_cap")
 
-[node name="TopCap" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
+[node name="RightCap" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0, 0)
 mesh = SubResource("BoxMesh_cap")
 
-[node name="SquareHandle" type="Node3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+[node name="LeftHandle" type="Node3D" parent="Visuals"]
 
-[node name="Post1" type="MeshInstance3D" parent="Visuals/SquareHandle"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17, -0.06)
+[node name="Post1" type="MeshInstance3D" parent="Visuals/LeftHandle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.165, 0.045, 0)
 mesh = SubResource("BoxMesh_handle_post")
 
-[node name="Post2" type="MeshInstance3D" parent="Visuals/SquareHandle"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17, 0.06)
+[node name="Post2" type="MeshInstance3D" parent="Visuals/LeftHandle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.165, -0.045, 0)
 mesh = SubResource("BoxMesh_handle_post")
 
-[node name="Crossbar" type="MeshInstance3D" parent="Visuals/SquareHandle"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.20, 0)
+[node name="Bar" type="MeshInstance3D" parent="Visuals/LeftHandle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.19, 0, 0)
+mesh = SubResource("BoxMesh_handle_bar")
+
+[node name="RightHandle" type="Node3D" parent="Visuals"]
+
+[node name="Post1" type="MeshInstance3D" parent="Visuals/RightHandle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.165, 0.045, 0)
+mesh = SubResource("BoxMesh_handle_post")
+
+[node name="Post2" type="MeshInstance3D" parent="Visuals/RightHandle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.165, -0.045, 0)
+mesh = SubResource("BoxMesh_handle_post")
+
+[node name="Bar" type="MeshInstance3D" parent="Visuals/RightHandle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.19, 0, 0)
 mesh = SubResource("BoxMesh_handle_bar")
 
 [node name="GlassChamber" type="MeshInstance3D" parent="Visuals"]
 mesh = SubResource("BoxMesh_glass")
 
 [node name="Strut1" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.098, 0, 0.098)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0.08)
 mesh = SubResource("BoxMesh_corner_strut")
 
 [node name="Strut2" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.098, 0, 0.098)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, -0.08)
 mesh = SubResource("BoxMesh_corner_strut")
 
 [node name="Strut3" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.098, 0, -0.098)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, 0.08)
 mesh = SubResource("BoxMesh_corner_strut")
 
 [node name="Strut4" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.098, 0, -0.098)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, -0.08)
 mesh = SubResource("BoxMesh_corner_strut")
 
 [node name="CoreOrb" type="MeshInstance3D" parent="Visuals"]
