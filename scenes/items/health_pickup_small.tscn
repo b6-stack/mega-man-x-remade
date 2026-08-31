@@ -1,0 +1,73 @@
+[gd_scene load_steps=10 format=3 uid="uid://c8smallpickup"]
+
+[ext_resource type="Script" path="res://scripts/items/health_pickup.gd" id="1_pickup"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_pickup"]
+radius = 0.28
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_core"]
+resource_local_to_scene = true
+shading_mode = 0
+albedo_color = Color(0.2, 1, 0.5, 1)
+emission_enabled = true
+emission = Color(0.15, 1, 0.45, 1)
+emission_energy_multiplier = 7.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_core"]
+material = SubResource("StandardMaterial3D_core")
+radius = 0.08
+height = 0.16
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_halo"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.3, 1, 0.6, 0.35)
+
+[sub_resource type="SphereMesh" id="SphereMesh_halo"]
+material = SubResource("StandardMaterial3D_halo")
+radius = 0.11
+height = 0.22
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_spark"]
+emission_shape = 1
+emission_sphere_radius = 0.14
+gravity = Vector3(0, 0.2, 0)
+initial_velocity_min = 0.1
+initial_velocity_max = 0.3
+scale_min = 0.5
+scale_max = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark"]
+shading_mode = 0
+albedo_color = Color(0.4, 1, 0.7, 1)
+emission_enabled = true
+emission = Color(0.4, 1, 0.7, 1)
+emission_energy_multiplier = 6.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_spark"]
+material = SubResource("StandardMaterial3D_spark")
+radius = 0.012
+height = 0.024
+
+[node name="HealthPickupSmall" type="Area3D"]
+collision_layer = 16
+collision_mask = 4
+script = ExtResource("1_pickup")
+heal_amount = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_pickup")
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="CoreOrb" type="MeshInstance3D" parent="Visuals"]
+mesh = SubResource("SphereMesh_core")
+
+[node name="HaloMesh" type="MeshInstance3D" parent="Visuals"]
+mesh = SubResource("SphereMesh_halo")
+
+[node name="Particles" type="GPUParticles3D" parent="Visuals"]
+amount = 12
+lifetime = 0.4
+process_material = SubResource("ParticleProcessMaterial_spark")
+draw_pass_1 = SubResource("SphereMesh_spark")

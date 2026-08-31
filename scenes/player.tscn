@@ -271,8 +271,8 @@ draw_pass_1 = SubResource("SphereMesh_sparkle")
 [node name="ElectricAuraLeft" type="GPUParticles3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.04)
 emitting = false
-amount = 16
-lifetime = 0.18
+amount = 8
+lifetime = 0.16
 process_material = SubResource("ParticleProcessMaterial_electric_aura")
 draw_pass_1 = SubResource("BoxMesh_spark_shard")
 
@@ -356,8 +356,8 @@ transform = Transform3D(1, 0, 0, 0, 0.978148, 0.207912, 0, -0.207912, 0.978148, 
 [node name="ElectricAuraRight" type="GPUParticles3D" parent="XROrigin3D/RightController/RightHandOffset"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.08)
 emitting = false
-amount = 16
-lifetime = 0.18
+amount = 8
+lifetime = 0.16
 process_material = SubResource("ParticleProcessMaterial_electric_aura")
 draw_pass_1 = SubResource("BoxMesh_spark_shard")
 

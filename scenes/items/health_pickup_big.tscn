@@ -1,0 +1,130 @@
+[gd_scene load_steps=15 format=3 uid="uid://c8bigpickup"]
+
+[ext_resource type="Script" path="res://scripts/items/health_pickup.gd" id="1_pickup"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_pickup"]
+height = 0.6
+radius = 0.25
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_case_metal"]
+albedo_color = Color(0.18, 0.22, 0.28, 1)
+metallic = 0.85
+roughness = 0.25
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_cap"]
+material = SubResource("StandardMaterial3D_case_metal")
+top_radius = 0.12
+bottom_radius = 0.12
+height = 0.04
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_handle"]
+albedo_color = Color(0.85, 0.7, 0.15, 1)
+metallic = 0.9
+roughness = 0.2
+
+[sub_resource type="TorusMesh" id="TorusMesh_handle"]
+material = SubResource("StandardMaterial3D_handle")
+inner_radius = 0.04
+outer_radius = 0.075
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_strut"]
+material = SubResource("StandardMaterial3D_case_metal")
+top_radius = 0.01
+bottom_radius = 0.01
+height = 0.22
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_glass"]
+transparency = 1
+albedo_color = Color(0.5, 0.85, 1, 0.25)
+roughness = 0.1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_glass"]
+material = SubResource("StandardMaterial3D_glass")
+top_radius = 0.105
+bottom_radius = 0.105
+height = 0.22
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_big_core"]
+resource_local_to_scene = true
+shading_mode = 0
+albedo_color = Color(0.15, 1, 0.55, 1)
+emission_enabled = true
+emission = Color(0.1, 1, 0.5, 1)
+emission_energy_multiplier = 8.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_big_core"]
+material = SubResource("StandardMaterial3D_big_core")
+radius = 0.075
+height = 0.15
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_spark"]
+emission_shape = 1
+emission_sphere_radius = 0.12
+gravity = Vector3(0, 0.3, 0)
+initial_velocity_min = 0.15
+initial_velocity_max = 0.4
+scale_min = 0.6
+scale_max = 1.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark"]
+shading_mode = 0
+albedo_color = Color(0.4, 1, 0.7, 1)
+emission_enabled = true
+emission = Color(0.4, 1, 0.7, 1)
+emission_energy_multiplier = 6.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_spark"]
+material = SubResource("StandardMaterial3D_spark")
+radius = 0.014
+height = 0.028
+
+[node name="HealthPickupBig" type="Area3D"]
+collision_layer = 16
+collision_mask = 4
+script = ExtResource("1_pickup")
+heal_amount = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CylinderShape3D_pickup")
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="BaseCap" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.12, 0)
+mesh = SubResource("CylinderMesh_cap")
+
+[node name="TopCap" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
+mesh = SubResource("CylinderMesh_cap")
+
+[node name="Handle" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.18, 0)
+mesh = SubResource("TorusMesh_handle")
+
+[node name="GlassChamber" type="MeshInstance3D" parent="Visuals"]
+mesh = SubResource("CylinderMesh_glass")
+
+[node name="Strut1" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.105, 0, 0)
+mesh = SubResource("CylinderMesh_strut")
+
+[node name="Strut2" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.105, 0, 0)
+mesh = SubResource("CylinderMesh_strut")
+
+[node name="Strut3" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.105)
+mesh = SubResource("CylinderMesh_strut")
+
+[node name="Strut4" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.105)
+mesh = SubResource("CylinderMesh_strut")
+
+[node name="CoreOrb" type="MeshInstance3D" parent="Visuals"]
+mesh = SubResource("SphereMesh_big_core")
+
+[node name="Particles" type="GPUParticles3D" parent="Visuals"]
+amount = 16
+lifetime = 0.45
+process_material = SubResource("ParticleProcessMaterial_spark")
+draw_pass_1 = SubResource("SphereMesh_spark")

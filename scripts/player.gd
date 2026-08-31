@@ -37,6 +37,7 @@ const DEATH_VORTEX_SCENE: PackedScene = preload("res://scenes/effects/death_vort
 
 @onready var xr_origin: XROrigin3D = $XROrigin3D
 @onready var xr_camera: XRCamera3D = $XROrigin3D/XRCamera3D
+@onready var forehead_gem: MeshInstance3D = get_node_or_null("XROrigin3D/XRCamera3D/HelmetVisorFrame/ForeheadGem")
 @onready var left_controller: XRController3D = $XROrigin3D/LeftController
 @onready var right_controller: XRController3D = $XROrigin3D/RightController
 @onready var left_hand_offset: Node3D = get_node_or_null("XROrigin3D/LeftController/LeftHandOffset")
@@ -78,6 +79,10 @@ func _ready() -> void:
 	current_health = max_health
 	if energy_gauge:
 		energy_gauge.set_health(current_health, max_health)
+	
+	# Make forehead gem material local for low-health emergency pulsing
+	if forehead_gem and forehead_gem.mesh and forehead_gem.mesh.material:
+		forehead_gem.material_override = forehead_gem.mesh.material.duplicate()
 	
 	_apply_controller_profile()
 	_init_openxr()
@@ -168,6 +173,15 @@ func toggle_pause() -> void:
 		if laser_pointer:
 			laser_pointer.set_active(true)
 
+func heal(amount: int) -> bool:
+	if is_dead or current_health >= max_health:
+		return false
+	current_health = mini(max_health, current_health + amount)
+	if energy_gauge:
+		energy_gauge.set_health(current_health, max_health)
+	_trigger_haptic(0.4, 0.12)
+	return true
+
 func take_damage(amount: int, hit_source_pos: Vector3 = Vector3.ZERO) -> void:
 	if is_dead or invincible_timer > 0.0:
 		return
@@ -240,6 +254,9 @@ func _process(delta: float) -> void:
 			if electric_aura_left: electric_aura_left.emitting = false
 			if electric_aura_right: electric_aura_right.emitting = false
 
+	# Low Health Forehead Gem Red Flashes (When down to <= 2 dots)
+	_update_helmet_jewel()
+
 	# Death Screen Whiteout Transition
 	if is_dead and _whiteout_progress < 1.0:
 		_whiteout_progress += delta / 1.2
@@ -249,6 +266,22 @@ func _process(delta: float) -> void:
 		
 		if _whiteout_progress >= 1.0 and game_over_menu and not game_over_menu.is_active:
 			game_over_menu.open(xr_camera.global_transform)
+
+func _update_helmet_jewel() -> void:
+	if not forehead_gem:
+		return
+	var mat: StandardMaterial3D = forehead_gem.material_override as StandardMaterial3D
+	if not mat:
+		return
+	
+	if current_health <= 2 and current_health > 0 and not is_dead:
+		# Rapid pulsing emergency red flashes
+		var pulse: float = sin(Time.get_ticks_msec() * 0.02) * 0.5 + 0.5
+		mat.emission_energy_multiplier = lerpf(1.5, 12.0, pulse)
+		mat.albedo_color = Color(1.0, 0.02 + 0.1 * (1.0 - pulse), 0.05 + 0.1 * (1.0 - pulse), 1.0)
+	else:
+		mat.emission_energy_multiplier = 6.0
+		mat.albedo_color = Color(1.0, 0.05, 0.12, 1.0)
 
 func _try_jump() -> bool:
 	if is_dead:

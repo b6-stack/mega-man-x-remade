@@ -3,6 +3,8 @@
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/target_dummy.tscn" id="2_dummy"]
 [ext_resource type="PackedScene" path="res://scenes/armored_target_dummy.tscn" id="3_armored_dummy"]
+[ext_resource type="PackedScene" uid="uid://c8smallpickup" path="res://scenes/items/health_pickup_small.tscn" id="4_pickup_small"]
+[ext_resource type="PackedScene" uid="uid://c8bigpickup" path="res://scenes/items/health_pickup_big.tscn" id="5_pickup_big"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.12, 0.25, 0.45, 1)
@@ -378,6 +380,21 @@ transform = Transform3D(-0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, -0.258819
 
 [node name="TargetDummy_Monolith" parent="Dummies" instance=ExtResource("2_dummy")]
 transform = Transform3D(0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, 0.258819, -12, 10.6, 0)
+
+
+[node name="Pickups" type="Node3D" parent="."]
+
+[node name="HealthPickupSmall_Left" parent="Pickups" instance=ExtResource("4_pickup_small")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.8, 2)
+
+[node name="HealthPickupSmall_Right" parent="Pickups" instance=ExtResource("4_pickup_small")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.8, 2)
+
+[node name="HealthPickupBig_Step1" parent="Pickups" instance=ExtResource("5_pickup_big")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, -6)
+
+[node name="HealthPickupBig_Bridge" parent="Pickups" instance=ExtResource("5_pickup_big")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.4, -14)
 
 [node name="VRPlayer" parent="." instance=ExtResource("1_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
