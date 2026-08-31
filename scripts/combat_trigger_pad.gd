@@ -17,8 +17,22 @@ func _ready() -> void:
 	body_exited.connect(_on_body_exited)
 	_update_pad_visuals()
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	_time_passed += delta
+	
+	# Continuous verification of player presence inside the trigger pad
+	var player_inside := false
+	for b in get_overlapping_bodies():
+		if b is VRPlayer or (b.get_parent() and b.get_parent() is VRPlayer):
+			player_inside = true
+			break
+	
+	if is_active != player_inside:
+		is_active = player_inside
+		if linked_dummy and is_instance_valid(linked_dummy):
+			linked_dummy.set_triggered(is_active)
+		_update_pad_visuals()
+
 	if is_active:
 		var pulse: float = sin(_time_passed * 6.0) * 0.5 + 0.5
 		if border_mesh and border_mesh.material_override is StandardMaterial3D:
@@ -28,17 +42,16 @@ func _process(delta: float) -> void:
 
 func _on_body_entered(body: Node3D) -> void:
 	if body is VRPlayer or (body.get_parent() and body.get_parent() is VRPlayer):
-		is_active = true
-		if linked_dummy:
-			linked_dummy.set_triggered(true)
-		_update_pad_visuals()
+		if not is_active:
+			is_active = true
+			if linked_dummy and is_instance_valid(linked_dummy):
+				linked_dummy.set_triggered(true)
+			_update_pad_visuals()
 
 func _on_body_exited(body: Node3D) -> void:
 	if body is VRPlayer or (body.get_parent() and body.get_parent() is VRPlayer):
-		is_active = false
-		if linked_dummy:
-			linked_dummy.set_triggered(false)
-		_update_pad_visuals()
+		# Re-verify in next physics tick
+		pass
 
 func _update_pad_visuals() -> void:
 	var active_col: Color = pad_color_active if is_active else pad_color_inactive

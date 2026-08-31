@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://c8shootingdummy"]
+[gd_scene load_steps=11 format=3 uid="uid://c8shootingdummy"]
 
 [ext_resource type="Script" path="res://scripts/shooting_target_dummy.gd" id="1_shootdummy"]
 
@@ -6,16 +6,27 @@
 height = 1.8
 radius = 0.45
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pedestal"]
+albedo_color = Color(0.12, 0.14, 0.18, 1)
+metallic = 0.85
+roughness = 0.3
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pedestal"]
+material = SubResource("StandardMaterial3D_pedestal")
+top_radius = 0.46
+bottom_radius = 0.52
+height = 0.35
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_turret_body"]
-albedo_color = Color(0.2, 0.22, 0.28, 1)
+albedo_color = Color(0.22, 0.26, 0.32, 1)
 metallic = 0.8
 roughness = 0.35
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_body"]
 material = SubResource("StandardMaterial3D_turret_body")
-top_radius = 0.38
-bottom_radius = 0.45
-height = 1.4
+top_radius = 0.36
+bottom_radius = 0.44
+height = 1.35
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eye"]
 resource_local_to_scene = true
@@ -31,15 +42,15 @@ radius = 0.14
 height = 0.18
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cannon_barrel"]
-albedo_color = Color(0.12, 0.14, 0.18, 1)
-metallic = 0.9
+albedo_color = Color(0.1, 0.12, 0.15, 1)
+metallic = 0.95
 roughness = 0.2
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_barrel"]
 material = SubResource("StandardMaterial3D_cannon_barrel")
-top_radius = 0.09
-bottom_radius = 0.12
-height = 0.3
+top_radius = 0.08
+bottom_radius = 0.11
+height = 0.35
 
 [node name="ShootingTargetDummy" type="StaticBody3D"]
 collision_layer = 1
@@ -50,17 +61,24 @@ script = ExtResource("1_shootdummy")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CylinderShape3D_dummy")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+[node name="PedestalMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+mesh = SubResource("CylinderMesh_pedestal")
+
+[node name="TurretHead" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="TurretHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.675, 0)
 mesh = SubResource("CylinderMesh_body")
 
-[node name="CannonEye" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, -0.32)
+[node name="CannonEye" type="MeshInstance3D" parent="TurretHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, -0.32)
 mesh = SubResource("SphereMesh_eye")
 
-[node name="Barrel" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 1.1, -0.42)
+[node name="Barrel" type="MeshInstance3D" parent="TurretHead"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.85, -0.48)
 mesh = SubResource("CylinderMesh_barrel")
 
-[node name="Muzzle" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, -0.62)
+[node name="Muzzle" type="Marker3D" parent="TurretHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, -0.72)

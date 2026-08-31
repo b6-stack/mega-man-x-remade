@@ -10,31 +10,33 @@ const ENERGY_BALL_SCENE: PackedScene = preload("res://scenes/projectiles/enemy_e
 const TRACKING_MISSILE_SCENE: PackedScene = preload("res://scenes/projectiles/tracking_missile.tscn")
 
 @export var weapon_type: WeaponType = WeaponType.ENERGY_BALL
-@export var fire_interval: float = 1.8
+@export var fire_interval: float = 1.6
 @export var max_health: float = 8.0
 @export var respawn_time: float = 4.0
 
-@onready var mesh_instance: MeshInstance3D = $MeshInstance3D
-@onready var cannon_eye: MeshInstance3D = $CannonEye
-@onready var muzzle: Marker3D = $Muzzle
+@onready var turret_head: Node3D = $TurretHead
+@onready var mesh_instance: MeshInstance3D = $TurretHead/MeshInstance3D
+@onready var cannon_eye: MeshInstance3D = $TurretHead/CannonEye
+@onready var muzzle: Marker3D = $TurretHead/Muzzle
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
 
 var current_health: float = 8.0
 var is_triggered: bool = false
 var is_enemy: bool = true
-var _fire_timer: float = 0.4
+var _fire_timer: float = 0.35
 var _is_destroyed: bool = false
 var _respawn_timer: float = 0.0
 var _flash_timer: float = 0.0
 
 func _ready() -> void:
 	current_health = max_health
-	_fire_timer = 0.4
+	_fire_timer = 0.35
 
 func set_triggered(active: bool) -> void:
 	is_triggered = active
 	if active:
-		_fire_timer = 0.4
+		# Rapid first shot when entering the square
+		_fire_timer = 0.35
 
 func _process(delta: float) -> void:
 	if _flash_timer > 0.0:
@@ -51,17 +53,22 @@ func _process(delta: float) -> void:
 	if not is_triggered:
 		return
 
-	# Aim forward (-Z) directly at the player camera
-	var player_cam := _get_player_node()
-	if player_cam:
-		var target_aim_pos := player_cam.global_position
-		target_aim_pos.y = clampf(target_aim_pos.y, 0.5, 2.5)
-		look_at(target_aim_pos, Vector3.UP)
+	# Aim turret head directly at the player
+	var player_node := _get_player_node()
+	if player_node and turret_head:
+		var target_aim_pos := player_node.global_position
+		# If targeting VRPlayer root, offset to chest height
+		if player_node is VRPlayer or player_node.name == "VRPlayer":
+			target_aim_pos.y += 1.2
+		
+		var to_target := target_aim_pos - turret_head.global_position
+		if to_target.length_squared() > 0.01:
+			turret_head.look_at(target_aim_pos, Vector3.UP)
 
-	# Firing sequence
+	# Firing timer
 	_fire_timer -= delta
-	if _fire_timer <= 0.35 and _fire_timer > 0.0:
-		# Muzzle charge pre-flash alert
+	if _fire_timer <= 0.30 and _fire_timer > 0.0:
+		# Muzzle charge pre-flash
 		if cannon_eye and cannon_eye.material_override is StandardMaterial3D:
 			cannon_eye.material_override.emission_energy_multiplier = 14.0
 	
@@ -74,9 +81,11 @@ func _process(delta: float) -> void:
 func _get_player_node() -> Node3D:
 	if get_tree().current_scene:
 		var cam := get_tree().current_scene.find_child("XRCamera3D", true, false) as Node3D
-		if cam: return cam
+		if cam and is_instance_valid(cam):
+			return cam
 		var p := get_tree().current_scene.find_child("VRPlayer", true, false) as Node3D
-		if p: return p
+		if p and is_instance_valid(p):
+			return p
 	return null
 
 func _fire_weapon() -> void:
@@ -90,6 +99,8 @@ func _fire_weapon() -> void:
 	
 	if muzzle:
 		proj.global_transform = muzzle.global_transform
+	elif turret_head:
+		proj.global_transform = turret_head.global_transform
 	else:
 		proj.global_transform = global_transform
 

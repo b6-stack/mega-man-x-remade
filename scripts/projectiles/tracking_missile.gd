@@ -2,7 +2,7 @@ extends Area3D
 class_name TrackingMissile
 
 @export var speed: float = 7.5
-@export var turn_speed: float = 2.8
+@export var turn_speed: float = 3.0
 @export var damage: int = 1
 @export var lifetime: float = 6.0
 @export var max_health: float = 1.0
@@ -23,9 +23,13 @@ func _ready() -> void:
 
 func _find_player() -> void:
 	if get_tree().current_scene:
-		_target_player = get_tree().current_scene.find_child("XRCamera3D", true, false) as Node3D
-		if not _target_player:
-			_target_player = get_tree().current_scene.find_child("VRPlayer", true, false) as Node3D
+		var cam := get_tree().current_scene.find_child("XRCamera3D", true, false) as Node3D
+		if cam and is_instance_valid(cam):
+			_target_player = cam
+			return
+		var p := get_tree().current_scene.find_child("VRPlayer", true, false) as Node3D
+		if p and is_instance_valid(p):
+			_target_player = p
 
 func _physics_process(delta: float) -> void:
 	if _is_destroyed:
@@ -39,6 +43,9 @@ func _physics_process(delta: float) -> void:
 	
 	if _target_player and is_instance_valid(_target_player):
 		var target_pos := _target_player.global_position
+		if _target_player is VRPlayer or _target_player.name == "VRPlayer":
+			target_pos.y += 1.1
+		
 		var to_target := (target_pos - global_position).normalized()
 		var current_forward := -global_transform.basis.z
 		
@@ -51,7 +58,6 @@ func _physics_process(delta: float) -> void:
 	
 	global_position += -global_transform.basis.z * speed * delta
 	
-	# Missile axial spin on Z
 	if mesh_root:
 		mesh_root.rotate_z(delta * 12.0)
 	
