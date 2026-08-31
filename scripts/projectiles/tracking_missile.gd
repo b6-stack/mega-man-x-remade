@@ -1,8 +1,8 @@
 extends Area3D
 class_name TrackingMissile
 
-@export var speed: float = 6.8
-@export var turn_speed: float = 2.6
+@export var speed: float = 7.5
+@export var turn_speed: float = 2.8
 @export var damage: int = 1
 @export var lifetime: float = 6.0
 @export var max_health: float = 1.0
@@ -12,6 +12,7 @@ class_name TrackingMissile
 @onready var light: OmniLight3D = $OmniLight3D
 
 var _timer: float = 0.0
+var _spawn_grace_timer: float = 0.20
 var _is_destroyed: bool = false
 var _target_player: Node3D = null
 
@@ -30,6 +31,9 @@ func _physics_process(delta: float) -> void:
 	if _is_destroyed:
 		return
 	
+	if _spawn_grace_timer > 0.0:
+		_spawn_grace_timer -= delta
+	
 	if not _target_player or not is_instance_valid(_target_player):
 		_find_player()
 	
@@ -38,16 +42,16 @@ func _physics_process(delta: float) -> void:
 		var to_target := (target_pos - global_position).normalized()
 		var current_forward := -global_transform.basis.z
 		
-		# Smoothly rotate towards player
+		# Smoothly rotate forward (-Z) towards player
 		var new_forward := current_forward.slerp(to_target, turn_speed * delta).normalized()
 		if new_forward.length_squared() > 0.001:
-			var target_look := global_position - new_forward
-			var up_axis := Vector3.UP if abs(new_forward.y) < 0.9 else Vector3.FORWARD
+			var target_look := global_position + new_forward
+			var up_axis := Vector3.UP if abs(new_forward.y) < 0.95 else Vector3.FORWARD
 			look_at(target_look, up_axis)
 	
 	global_position += -global_transform.basis.z * speed * delta
 	
-	# Gentle missile spin on Z axis
+	# Missile axial spin on Z
 	if mesh_root:
 		mesh_root.rotate_z(delta * 12.0)
 	
@@ -63,6 +67,9 @@ func _on_area_entered(area: Area3D) -> void:
 
 func _handle_impact(target: Node3D) -> void:
 	if _is_destroyed or not is_instance_valid(target):
+		return
+	
+	if _spawn_grace_timer > 0.0 and (target is ShootingTargetDummy or target is StaticBody3D):
 		return
 	
 	if target is VRPlayer or (target.get_parent() and target.get_parent() is VRPlayer):
@@ -87,7 +94,6 @@ func _explode() -> void:
 	if mesh_root: mesh_root.visible = false
 	if light: light.visible = false
 	
-	# Scale pop & free
 	var tween := create_tween()
 	tween.tween_property(self, "scale", Vector3.ZERO, 0.06)
 	tween.tween_callback(queue_free)

@@ -22,19 +22,18 @@ const TRACKING_MISSILE_SCENE: PackedScene = preload("res://scenes/projectiles/tr
 var current_health: float = 8.0
 var is_triggered: bool = false
 var is_enemy: bool = true
-var _fire_timer: float = 0.0
-var _charge_flash_timer: float = 0.0
+var _fire_timer: float = 0.4
 var _is_destroyed: bool = false
 var _respawn_timer: float = 0.0
 var _flash_timer: float = 0.0
 
 func _ready() -> void:
 	current_health = max_health
-	_fire_timer = 0.6
+	_fire_timer = 0.4
 
 func set_triggered(active: bool) -> void:
 	is_triggered = active
-	if active and _fire_timer <= 0.2:
+	if active:
 		_fire_timer = 0.4
 
 func _process(delta: float) -> void:
@@ -52,21 +51,19 @@ func _process(delta: float) -> void:
 	if not is_triggered:
 		return
 
-	# Aim at player camera
+	# Aim forward (-Z) directly at the player camera
 	var player_cam := _get_player_node()
 	if player_cam:
-		var to_cam := player_cam.global_position - global_position
-		to_cam.y += 0.2
-		if to_cam.length_squared() > 0.001:
-			var target_look := global_position - to_cam.normalized()
-			look_at(target_look, Vector3.UP)
+		var target_aim_pos := player_cam.global_position
+		target_aim_pos.y = clampf(target_aim_pos.y, 0.5, 2.5)
+		look_at(target_aim_pos, Vector3.UP)
 
 	# Firing sequence
 	_fire_timer -= delta
 	if _fire_timer <= 0.35 and _fire_timer > 0.0:
-		# Muzzle charge pre-flash
+		# Muzzle charge pre-flash alert
 		if cannon_eye and cannon_eye.material_override is StandardMaterial3D:
-			cannon_eye.material_override.emission_energy_multiplier = 12.0
+			cannon_eye.material_override.emission_energy_multiplier = 14.0
 	
 	if _fire_timer <= 0.0:
 		_fire_weapon()

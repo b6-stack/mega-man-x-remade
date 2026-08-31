@@ -10,6 +10,7 @@ class_name EnemyEnergyBall
 @onready var particles: GPUParticles3D = $GPUParticles3D
 
 var _timer: float = 0.0
+var _spawn_grace_timer: float = 0.15
 var _is_destroyed: bool = false
 
 func _ready() -> void:
@@ -19,6 +20,9 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if _is_destroyed:
 		return
+	
+	if _spawn_grace_timer > 0.0:
+		_spawn_grace_timer -= delta
 	
 	global_position += -global_transform.basis.z * speed * delta
 	_timer += delta
@@ -33,6 +37,9 @@ func _on_area_entered(area: Area3D) -> void:
 
 func _handle_impact(target: Node3D) -> void:
 	if _is_destroyed or not is_instance_valid(target):
+		return
+	
+	if _spawn_grace_timer > 0.0 and (target is ShootingTargetDummy or target is StaticBody3D):
 		return
 	
 	if target is VRPlayer or (target.get_parent() and target.get_parent() is VRPlayer):
@@ -57,7 +64,6 @@ func _explode() -> void:
 	if particles:
 		particles.emitting = false
 	
-	# Quick scale pop
 	var tween := create_tween()
 	tween.tween_property(self, "scale", Vector3.ZERO, 0.05)
 	tween.tween_callback(queue_free)
