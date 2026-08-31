@@ -2,6 +2,7 @@ extends Area3D
 class_name HealthPickup
 
 @export var heal_amount: int = 1
+@export var respawn_time: float = 6.0
 @export var bob_amplitude: float = 0.08
 @export var bob_speed: float = 2.5
 @export var rotate_speed: float = 1.8
@@ -12,27 +13,26 @@ class_name HealthPickup
 var _base_y: float = 0.0
 var _time_passed: float = 0.0
 var _is_collected: bool = false
+var _respawn_timer: float = 0.0
 
 func _ready() -> void:
 	_base_y = position.y
-	# Connect collision detection
 	body_entered.connect(_on_body_entered)
 	area_entered.connect(_on_area_entered)
-	
-	# Randomize initial phase so multiple pickups don't bob in identical sync
 	_time_passed = randf() * 10.0
 
 func _process(delta: float) -> void:
 	if _is_collected:
+		if respawn_time > 0.0:
+			_respawn_timer -= delta
+			if _respawn_timer <= 0.0:
+				_respawn()
 		return
 	
 	_time_passed += delta
-	# Floating bob animation
 	position.y = _base_y + sin(_time_passed * bob_speed) * bob_amplitude
-	# Smooth rotation
 	rotate_y(rotate_speed * delta)
 	
-	# Subtle energy core pulse
 	if orb_mesh and orb_mesh.material_override is StandardMaterial3D:
 		var mat: StandardMaterial3D = orb_mesh.material_override
 		var pulse: float = sin(_time_passed * 4.0) * 0.5 + 0.5
@@ -64,11 +64,26 @@ func _try_pickup(target: Node) -> void:
 
 func _collect() -> void:
 	_is_collected = true
-	# Turn off collision
 	set_deferred("monitoring", false)
 	set_deferred("monitorable", false)
 	
-	# Quick scale-down pop
 	var tween := create_tween()
 	tween.tween_property(self, "scale", Vector3(0.01, 0.01, 0.01), 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
-	tween.tween_callback(queue_free)
+	tween.tween_callback(func():
+		visible = false
+		if respawn_time > 0.0:
+			_respawn_timer = respawn_time
+		else:
+			queue_free()
+	)
+
+func _respawn() -> void:
+	_is_collected = false
+	visible = true
+	scale = Vector3.ZERO
+	position.y = _base_y
+	set_deferred("monitoring", true)
+	set_deferred("monitorable", true)
+	
+	var tween := create_tween()
+	tween.tween_property(self, "scale", Vector3.ONE, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)

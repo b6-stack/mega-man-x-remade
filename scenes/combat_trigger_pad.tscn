@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/combat_trigger_pad.gd" id="1_pad"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pad"]
-size = Vector3(2.5, 0.5, 2.5)
+size = Vector3(6.5, 2.0, 6.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_plate"]
 albedo_color = Color(0.08, 0.10, 0.14, 1)
@@ -12,7 +12,7 @@ roughness = 0.4
 
 [sub_resource type="BoxMesh" id="BoxMesh_plate"]
 material = SubResource("StandardMaterial3D_plate")
-size = Vector3(2.4, 0.05, 2.4)
+size = Vector3(6.4, 0.05, 6.4)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_border"]
 resource_local_to_scene = true
@@ -24,11 +24,11 @@ emission_energy_multiplier = 2.5
 
 [sub_resource type="BoxMesh" id="BoxMesh_border"]
 material = SubResource("StandardMaterial3D_border")
-size = Vector3(2.5, 0.07, 2.5)
+size = Vector3(6.5, 0.07, 6.5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_inner_grid"]
 material = SubResource("StandardMaterial3D_border")
-size = Vector3(1.4, 0.08, 1.4)
+size = Vector3(3.8, 0.08, 3.8)
 
 [node name="CombatTriggerPad" type="Area3D"]
 collision_layer = 8
@@ -36,7 +36,7 @@ collision_mask = 4
 script = ExtResource("1_pad")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
 shape = SubResource("BoxShape3D_pad")
 
 [node name="BorderMesh" type="MeshInstance3D" parent="."]
@@ -52,7 +52,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 mesh = SubResource("BoxMesh_inner_grid")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 light_color = Color(0, 0.85, 1, 1)
-light_energy = 2.0
-omni_range = 3.5
+light_energy = 2.5
+omni_range = 8.0
