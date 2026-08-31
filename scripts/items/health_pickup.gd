@@ -56,6 +56,7 @@ func _try_pickup(target: Node) -> void:
 	if player and is_instance_valid(player) and player.has_method("heal"):
 		if player.current_health < player.max_health:
 			_is_collected = true
+			_respawn_timer = respawn_time
 			if collision_shape:
 				collision_shape.set_deferred("disabled", true)
 			set_deferred("monitoring", false)
@@ -65,6 +66,7 @@ func _try_pickup(target: Node) -> void:
 				_collect()
 			else:
 				_is_collected = false
+				_respawn_timer = 0.0
 				if collision_shape:
 					collision_shape.set_deferred("disabled", false)
 				set_deferred("monitoring", true)
@@ -74,9 +76,7 @@ func _collect() -> void:
 	tween.tween_property(self, "scale", Vector3(0.01, 0.01, 0.01), 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	tween.tween_callback(func():
 		visible = false
-		if respawn_time > 0.0:
-			_respawn_timer = respawn_time
-		else:
+		if respawn_time <= 0.0:
 			queue_free()
 	)
 
