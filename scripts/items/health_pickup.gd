@@ -2,13 +2,14 @@ extends Area3D
 class_name HealthPickup
 
 @export var heal_amount: int = 1
-@export var respawn_time: float = 6.0
+@export var respawn_time: float = 5.0
 @export var bob_amplitude: float = 0.08
 @export var bob_speed: float = 2.5
 @export var rotate_speed: float = 1.8
 
 @onready var orb_mesh: MeshInstance3D = get_node_or_null("Visuals/CoreOrb")
 @onready var particles: GPUParticles3D = get_node_or_null("Visuals/Particles")
+@onready var collision_shape: CollisionShape3D = get_node_or_null("CollisionShape3D")
 
 var _base_y: float = 0.0
 var _time_passed: float = 0.0
@@ -38,6 +39,8 @@ func _process(delta: float) -> void:
 		mat.emission_energy_multiplier = lerpf(5.0, 9.0, pulse)
 
 func _on_body_entered(body: Node3D) -> void:
+	if _is_collected:
+		return
 	_try_pickup(body)
 
 func _try_pickup(target: Node) -> void:
@@ -53,16 +56,20 @@ func _try_pickup(target: Node) -> void:
 	if player and is_instance_valid(player) and player.has_method("heal"):
 		if player.current_health < player.max_health:
 			_is_collected = true
+			if collision_shape:
+				collision_shape.set_deferred("disabled", true)
+			set_deferred("monitoring", false)
+			
 			var healed = player.heal(heal_amount)
 			if healed:
 				_collect()
 			else:
 				_is_collected = false
+				if collision_shape:
+					collision_shape.set_deferred("disabled", false)
+				set_deferred("monitoring", true)
 
 func _collect() -> void:
-	set_deferred("monitoring", false)
-	set_deferred("monitorable", false)
-	
 	var tween := create_tween()
 	tween.tween_property(self, "scale", Vector3(0.01, 0.01, 0.01), 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	tween.tween_callback(func():
@@ -78,8 +85,9 @@ func _respawn() -> void:
 	visible = true
 	scale = Vector3.ZERO
 	position.y = _base_y
+	if collision_shape:
+		collision_shape.set_deferred("disabled", false)
 	set_deferred("monitoring", true)
-	set_deferred("monitorable", true)
 	
 	var tween := create_tween()
 	tween.tween_property(self, "scale", Vector3.ONE, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)

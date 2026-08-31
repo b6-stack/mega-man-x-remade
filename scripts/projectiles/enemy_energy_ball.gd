@@ -1,7 +1,7 @@
 extends Area3D
 class_name EnemyEnergyBall
 
-@export var speed: float = 11.0
+@export var speed: float = 12.0
 @export var damage: int = 1
 @export var lifetime: float = 5.0
 
@@ -9,13 +9,21 @@ class_name EnemyEnergyBall
 @onready var light: OmniLight3D = $OmniLight3D
 @onready var particles: GPUParticles3D = $GPUParticles3D
 
+var velocity_dir: Vector3 = Vector3.FORWARD
 var _timer: float = 0.0
 var _spawn_grace_timer: float = 0.15
 var _is_destroyed: bool = false
 
+func setup_trajectory(target_pos: Vector3) -> void:
+	velocity_dir = (target_pos - global_position).normalized()
+	if velocity_dir.length_squared() > 0.001:
+		look_at(global_position + velocity_dir, Vector3.UP if abs(velocity_dir.y) < 0.95 else Vector3.FORWARD)
+
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	area_entered.connect(_on_area_entered)
+	if velocity_dir == Vector3.FORWARD:
+		velocity_dir = -global_transform.basis.z
 
 func _physics_process(delta: float) -> void:
 	if _is_destroyed:
@@ -24,7 +32,7 @@ func _physics_process(delta: float) -> void:
 	if _spawn_grace_timer > 0.0:
 		_spawn_grace_timer -= delta
 	
-	global_position += -global_transform.basis.z * speed * delta
+	global_position += velocity_dir * speed * delta
 	_timer += delta
 	if _timer >= lifetime:
 		queue_free()
@@ -56,6 +64,8 @@ func take_damage(_amount: float, _hit_pos: Vector3 = Vector3.ZERO, _hit_normal: 
 	return true
 
 func _explode() -> void:
+	if _is_destroyed:
+		return
 	_is_destroyed = true
 	set_deferred("monitoring", false)
 	set_deferred("monitorable", false)

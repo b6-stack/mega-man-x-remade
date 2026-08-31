@@ -53,17 +53,11 @@ func _process(delta: float) -> void:
 		return
 
 	# Aim turret head directly at the player's chest center
-	var player_node := _get_player_node()
-	if player_node and turret_head:
-		var target_aim_pos := player_node.global_position
-		if player_node.name == "XRCamera3D" or player_node is Camera3D:
-			target_aim_pos.y -= 0.35 # Chest height (35cm below headset)
-		elif player_node is VRPlayer or player_node.name == "VRPlayer":
-			target_aim_pos.y += 1.05 # Chest height (1.05m above feet)
-		
-		var to_target := target_aim_pos - turret_head.global_position
+	var aim_target := _get_target_aim_position()
+	if turret_head:
+		var to_target := aim_target - turret_head.global_position
 		if to_target.length_squared() > 0.01:
-			turret_head.look_at(target_aim_pos, Vector3.UP)
+			turret_head.look_at(aim_target, Vector3.UP)
 
 	# Firing timer
 	_fire_timer -= delta
@@ -88,6 +82,18 @@ func _get_player_node() -> Node3D:
 			return p
 	return null
 
+func _get_target_aim_position() -> Vector3:
+	var player_node := _get_player_node()
+	if not player_node:
+		return global_position + Vector3.FORWARD * 10.0
+	
+	var pos := player_node.global_position
+	if player_node is Camera3D or player_node.name == "XRCamera3D":
+		pos.y -= 0.35 # Chest height (35cm below headset)
+	elif player_node is VRPlayer or player_node.name == "VRPlayer":
+		pos.y += 1.05 # Chest height (1.05m above player origin)
+	return pos
+
 func _fire_weapon() -> void:
 	var scene_to_spawn: PackedScene = ENERGY_BALL_SCENE if weapon_type == WeaponType.ENERGY_BALL else TRACKING_MISSILE_SCENE
 	if not scene_to_spawn:
@@ -97,12 +103,16 @@ func _fire_weapon() -> void:
 	var current_scene := get_tree().current_scene if get_tree().current_scene else get_parent()
 	current_scene.add_child(proj)
 	
-	if muzzle:
-		proj.global_transform = muzzle.global_transform
-	elif turret_head:
-		proj.global_transform = turret_head.global_transform
+	var spawn_pos: Vector3 = muzzle.global_position if muzzle else (turret_head.global_position if turret_head else global_position)
+	proj.global_position = spawn_pos
+	
+	var aim_target := _get_target_aim_position()
+	if proj.has_method("setup_trajectory"):
+		proj.setup_trajectory(aim_target)
 	else:
-		proj.global_transform = global_transform
+		var dir := (aim_target - spawn_pos).normalized()
+		if dir.length_squared() > 0.001:
+			proj.look_at(spawn_pos + dir, Vector3.UP if abs(dir.y) < 0.95 else Vector3.FORWARD)
 
 func take_damage(amount: float, _hit_pos: Vector3 = Vector3.ZERO, _hit_normal: Vector3 = Vector3.ZERO) -> bool:
 	if _is_destroyed:
