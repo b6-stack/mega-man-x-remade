@@ -35,7 +35,6 @@ func _ready() -> void:
 func set_triggered(active: bool) -> void:
 	is_triggered = active
 	if active:
-		# Rapid first shot when entering the square
 		_fire_timer = 0.35
 
 func _process(delta: float) -> void:
@@ -53,13 +52,14 @@ func _process(delta: float) -> void:
 	if not is_triggered:
 		return
 
-	# Aim turret head directly at the player
+	# Aim turret head directly at the player's chest center
 	var player_node := _get_player_node()
 	if player_node and turret_head:
 		var target_aim_pos := player_node.global_position
-		# If targeting VRPlayer root, offset to chest height
-		if player_node is VRPlayer or player_node.name == "VRPlayer":
-			target_aim_pos.y += 1.2
+		if player_node.name == "XRCamera3D" or player_node is Camera3D:
+			target_aim_pos.y -= 0.35 # Chest height (35cm below headset)
+		elif player_node is VRPlayer or player_node.name == "VRPlayer":
+			target_aim_pos.y += 1.05 # Chest height (1.05m above feet)
 		
 		var to_target := target_aim_pos - turret_head.global_position
 		if to_target.length_squared() > 0.01:
@@ -68,7 +68,7 @@ func _process(delta: float) -> void:
 	# Firing timer
 	_fire_timer -= delta
 	if _fire_timer <= 0.30 and _fire_timer > 0.0:
-		# Muzzle charge pre-flash
+		# Muzzle charge pre-flash alert
 		if cannon_eye and cannon_eye.material_override is StandardMaterial3D:
 			cannon_eye.material_override.emission_energy_multiplier = 14.0
 	

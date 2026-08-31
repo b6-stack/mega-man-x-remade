@@ -18,7 +18,6 @@ var _respawn_timer: float = 0.0
 func _ready() -> void:
 	_base_y = position.y
 	body_entered.connect(_on_body_entered)
-	area_entered.connect(_on_area_entered)
 	_time_passed = randf() * 10.0
 
 func _process(delta: float) -> void:
@@ -41,11 +40,6 @@ func _process(delta: float) -> void:
 func _on_body_entered(body: Node3D) -> void:
 	_try_pickup(body)
 
-func _on_area_entered(area: Area3D) -> void:
-	_try_pickup(area)
-	if area.get_parent():
-		_try_pickup(area.get_parent())
-
 func _try_pickup(target: Node) -> void:
 	if _is_collected or not is_instance_valid(target):
 		return
@@ -53,17 +47,19 @@ func _try_pickup(target: Node) -> void:
 	var player: VRPlayer = null
 	if target is VRPlayer:
 		player = target
-	elif target.has_method("heal"):
-		player = target as VRPlayer
 	elif target.get_parent() and target.get_parent() is VRPlayer:
 		player = target.get_parent() as VRPlayer
 	
-	if player and player.has_method("heal"):
-		if player.heal(heal_amount):
-			_collect()
+	if player and is_instance_valid(player) and player.has_method("heal"):
+		if player.current_health < player.max_health:
+			_is_collected = true
+			var healed = player.heal(heal_amount)
+			if healed:
+				_collect()
+			else:
+				_is_collected = false
 
 func _collect() -> void:
-	_is_collected = true
 	set_deferred("monitoring", false)
 	set_deferred("monitorable", false)
 	
