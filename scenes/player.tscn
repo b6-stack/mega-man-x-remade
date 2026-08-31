@@ -123,7 +123,7 @@ emission_energy_multiplier = 10.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_spark_shard"]
 material = SubResource("StandardMaterial3D_aura_p")
-size = Vector3(0.01, 0.075, 0.01)
+size = Vector3(0.005, 0.075, 0.005)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_buster_rear_swell"]
 material = SubResource("StandardMaterial3D_armor_cyan")
@@ -271,7 +271,7 @@ draw_pass_1 = SubResource("SphereMesh_sparkle")
 [node name="ElectricAuraLeft" type="GPUParticles3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.04)
 emitting = false
-amount = 32
+amount = 16
 lifetime = 0.18
 process_material = SubResource("ParticleProcessMaterial_electric_aura")
 draw_pass_1 = SubResource("BoxMesh_spark_shard")
@@ -356,7 +356,7 @@ transform = Transform3D(1, 0, 0, 0, 0.978148, 0.207912, 0, -0.207912, 0.978148, 
 [node name="ElectricAuraRight" type="GPUParticles3D" parent="XROrigin3D/RightController/RightHandOffset"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.08)
 emitting = false
-amount = 32
+amount = 16
 lifetime = 0.18
 process_material = SubResource("ParticleProcessMaterial_electric_aura")
 draw_pass_1 = SubResource("BoxMesh_spark_shard")

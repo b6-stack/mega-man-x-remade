@@ -28,6 +28,8 @@ func _ready() -> void:
 		beam_mesh.material_override = laser_mat
 	if dot_mesh:
 		dot_mesh.material_override = laser_mat
+	
+	set_active(false)
 
 func _find_controller() -> XRController3D:
 	var p: Node = get_parent()
@@ -40,13 +42,21 @@ func _find_controller() -> XRController3D:
 func set_active(active: bool) -> void:
 	is_active = active
 	visible = active
+	if beam_mesh:
+		beam_mesh.visible = active
+	if dot_mesh:
+		dot_mesh.visible = false
 
 func _process(_delta: float) -> void:
 	if not is_active:
 		visible = false
+		if beam_mesh: beam_mesh.visible = false
+		if dot_mesh: dot_mesh.visible = false
 		return
 	
 	visible = true
+	if beam_mesh: beam_mesh.visible = true
+	
 	var space_state := get_world_3d().direct_space_state
 	var from_pos: Vector3 = global_position
 	var to_pos: Vector3 = global_position + (-global_transform.basis.z * max_distance)

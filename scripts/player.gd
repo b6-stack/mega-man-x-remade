@@ -86,6 +86,18 @@ func _ready() -> void:
 		right_controller.button_pressed.connect(_on_controller_button_pressed)
 	if left_controller:
 		left_controller.button_pressed.connect(_on_controller_button_pressed)
+	
+	if pause_menu:
+		pause_menu.resumed.connect(_on_pause_menu_closed)
+		pause_menu.restarted.connect(_on_pause_menu_closed)
+		pause_menu.quitted.connect(_on_pause_menu_closed)
+	
+	if laser_pointer:
+		laser_pointer.set_active(false)
+
+func _on_pause_menu_closed() -> void:
+	if laser_pointer and not is_dead:
+		laser_pointer.set_active(false)
 
 func _apply_controller_profile() -> void:
 	match controller_profile:
