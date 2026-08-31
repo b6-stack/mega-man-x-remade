@@ -22,6 +22,8 @@ func _ready() -> void:
 		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		mat.no_depth_test = true
+		mat.render_priority = 100
 		mat.albedo_texture = sub_viewport.get_texture()
 		menu_quad.material_override = mat
 
@@ -39,7 +41,7 @@ func open(cam_transform: Transform3D) -> void:
 		forward = Vector3.FORWARD
 	forward = forward.normalized()
 	
-	global_position = cam_transform.origin + forward * 1.4 + Vector3(0, -0.05, 0)
+	global_position = cam_transform.origin + forward * 1.3 + Vector3(0, -0.05, 0)
 	look_at(global_position + forward, Vector3.UP)
 
 func _on_restart_pressed() -> void:

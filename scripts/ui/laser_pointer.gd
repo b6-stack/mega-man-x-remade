@@ -14,6 +14,20 @@ func _ready() -> void:
 	_controller = _find_controller()
 	if _controller:
 		_controller.button_pressed.connect(_on_controller_button)
+	
+	var laser_mat := StandardMaterial3D.new()
+	laser_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	laser_mat.no_depth_test = true
+	laser_mat.render_priority = 110
+	laser_mat.albedo_color = Color(0.2, 0.85, 1.0, 1.0)
+	laser_mat.emission_enabled = true
+	laser_mat.emission = Color(0.2, 0.85, 1.0, 1.0)
+	laser_mat.emission_energy_multiplier = 6.0
+	
+	if beam_mesh:
+		beam_mesh.material_override = laser_mat
+	if dot_mesh:
+		dot_mesh.material_override = laser_mat
 
 func _find_controller() -> XRController3D:
 	var p: Node = get_parent()

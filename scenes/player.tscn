@@ -101,27 +101,29 @@ radius = 0.015
 height = 0.03
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_electric_aura"]
+particle_flag_align_y = true
 emission_shape = 3
-emission_box_extents = Vector3(0.08, 0.08, 0.12)
+emission_box_extents = Vector3(0.09, 0.09, 0.14)
 direction = Vector3(0, 1, 0)
 spread = 180.0
-initial_velocity_min = 1.2
-initial_velocity_max = 3.0
+initial_velocity_min = 2.5
+initial_velocity_max = 5.5
+damping_min = 8.0
+damping_max = 14.0
 gravity = Vector3(0, 0, 0)
 scale_min = 0.8
-scale_max = 1.5
+scale_max = 1.6
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aura_p"]
 shading_mode = 0
-albedo_color = Color(0.3, 0.95, 1, 1)
+albedo_color = Color(1, 0.92, 0.15, 1)
 emission_enabled = true
-emission = Color(0.4, 0.98, 1, 1)
+emission = Color(1, 0.88, 0.08, 1)
 emission_energy_multiplier = 10.0
 
-[sub_resource type="SphereMesh" id="SphereMesh_aura_p"]
+[sub_resource type="BoxMesh" id="BoxMesh_spark_shard"]
 material = SubResource("StandardMaterial3D_aura_p")
-radius = 0.045
-height = 0.09
+size = Vector3(0.01, 0.075, 0.01)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_buster_rear_swell"]
 material = SubResource("StandardMaterial3D_armor_cyan")
@@ -179,6 +181,8 @@ height = 0.04
 resource_local_to_scene = true
 transparency = 1
 shading_mode = 0
+no_depth_test = true
+render_priority = 90
 albedo_color = Color(1, 1, 1, 0)
 
 [sub_resource type="QuadMesh" id="QuadMesh_whiteout"]
@@ -187,6 +191,8 @@ size = Vector2(2, 2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_laser"]
 shading_mode = 0
+no_depth_test = true
+render_priority = 110
 albedo_color = Color(0.2, 0.85, 1, 1)
 emission_enabled = true
 emission = Color(0.2, 0.85, 1, 1)
@@ -265,10 +271,10 @@ draw_pass_1 = SubResource("SphereMesh_sparkle")
 [node name="ElectricAuraLeft" type="GPUParticles3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.04)
 emitting = false
-amount = 28
-lifetime = 0.2
+amount = 32
+lifetime = 0.18
 process_material = SubResource("ParticleProcessMaterial_electric_aura")
-draw_pass_1 = SubResource("SphereMesh_aura_p")
+draw_pass_1 = SubResource("BoxMesh_spark_shard")
 
 [node name="GauntletRearBody" type="MeshInstance3D" parent="XROrigin3D/LeftController/LeftHandOffset"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0.008)
@@ -350,10 +356,10 @@ transform = Transform3D(1, 0, 0, 0, 0.978148, 0.207912, 0, -0.207912, 0.978148, 
 [node name="ElectricAuraRight" type="GPUParticles3D" parent="XROrigin3D/RightController/RightHandOffset"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.08)
 emitting = false
-amount = 28
-lifetime = 0.2
+amount = 32
+lifetime = 0.18
 process_material = SubResource("ParticleProcessMaterial_electric_aura")
-draw_pass_1 = SubResource("SphereMesh_aura_p")
+draw_pass_1 = SubResource("BoxMesh_spark_shard")
 
 [node name="XBuster" type="Node3D" parent="XROrigin3D/RightController/RightHandOffset"]
 script = ExtResource("2_buster")
