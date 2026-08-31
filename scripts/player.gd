@@ -275,10 +275,16 @@ func _update_helmet_jewel() -> void:
 		return
 	
 	if current_health <= 2 and current_health > 0 and not is_dead:
-		# Rapid pulsing emergency red flashes against dull baseline
-		var pulse: float = sin(Time.get_ticks_msec() * 0.02) * 0.5 + 0.5
-		mat.emission_energy_multiplier = lerpf(0.2, 14.0, pulse)
-		mat.albedo_color = Color(lerpf(0.40, 1.0, pulse), lerpf(0.03, 0.05, pulse), lerpf(0.05, 0.1, pulse), 1.0)
+		# Slower, smooth sine-wave breathing pulse (~0.9 Hz)
+		var pulse: float = sin(Time.get_ticks_msec() * 0.0055) * 0.5 + 0.5
+		var smooth_pulse: float = pulse * pulse * (3.0 - 2.0 * pulse)
+		mat.emission_energy_multiplier = lerpf(0.2, 12.0, smooth_pulse)
+		mat.albedo_color = Color(
+			lerpf(0.40, 1.0, smooth_pulse),
+			lerpf(0.03, 0.05, smooth_pulse),
+			lerpf(0.05, 0.1, smooth_pulse),
+			1.0
+		)
 	else:
 		# Really dull and dim red baseline
 		mat.emission_energy_multiplier = 0.2

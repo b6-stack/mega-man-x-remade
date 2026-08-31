@@ -1,0 +1,95 @@
+[gd_scene load_steps=12 format=3 uid="uid://c8trackingmissile"]
+
+[ext_resource type="Script" path="res://scripts/projectiles/tracking_missile.gd" id="1_missile"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_missile"]
+size = Vector3(0.24, 0.24, 0.45)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_missile_body"]
+albedo_color = Color(0.25, 0.28, 0.35, 1)
+metallic = 0.85
+roughness = 0.3
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_fuselage"]
+material = SubResource("StandardMaterial3D_missile_body")
+top_radius = 0.05
+bottom_radius = 0.05
+height = 0.28
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nose"]
+shading_mode = 0
+albedo_color = Color(1, 0.15, 0.15, 1)
+emission_enabled = true
+emission = Color(1, 0.15, 0.15, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_nose"]
+material = SubResource("StandardMaterial3D_nose")
+radius = 0.052
+height = 0.11
+
+[sub_resource type="BoxMesh" id="BoxMesh_fin"]
+material = SubResource("StandardMaterial3D_missile_body")
+size = Vector3(0.18, 0.01, 0.08)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_exhaust"]
+emission_shape = 1
+emission_sphere_radius = 0.03
+direction = Vector3(0, 0, 1)
+spread = 10.0
+initial_velocity_min = 2.5
+initial_velocity_max = 4.5
+gravity = Vector3(0, 0, 0)
+scale_min = 0.6
+scale_max = 1.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flame"]
+shading_mode = 0
+albedo_color = Color(1, 0.45, 0.05, 1)
+emission_enabled = true
+emission = Color(1, 0.4, 0.05, 1)
+emission_energy_multiplier = 8.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_flame"]
+material = SubResource("StandardMaterial3D_flame")
+radius = 0.025
+height = 0.05
+
+[node name="TrackingMissile" type="Area3D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_missile")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_missile")
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="Fuselage" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_fuselage")
+
+[node name="NoseCone" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.14)
+mesh = SubResource("SphereMesh_nose")
+
+[node name="FinH" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
+mesh = SubResource("BoxMesh_fin")
+
+[node name="FinV" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0.1)
+mesh = SubResource("BoxMesh_fin")
+
+[node name="Exhaust" type="GPUParticles3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15)
+amount = 24
+lifetime = 0.15
+process_material = SubResource("ParticleProcessMaterial_exhaust")
+draw_pass_1 = SubResource("SphereMesh_flame")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15)
+light_color = Color(1, 0.45, 0.05, 1)
+light_energy = 3.0
+omni_range = 2.5

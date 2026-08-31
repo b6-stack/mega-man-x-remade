@@ -5,6 +5,8 @@
 [ext_resource type="PackedScene" path="res://scenes/armored_target_dummy.tscn" id="3_armored_dummy"]
 [ext_resource type="PackedScene" uid="uid://c8smallpickup" path="res://scenes/items/health_pickup_small.tscn" id="4_pickup_small"]
 [ext_resource type="PackedScene" uid="uid://c8bigpickup" path="res://scenes/items/health_pickup_big.tscn" id="5_pickup_big"]
+[ext_resource type="PackedScene" uid="uid://c8shootingdummy" path="res://scenes/shooting_target_dummy.tscn" id="6_shooting_dummy"]
+[ext_resource type="PackedScene" uid="uid://c8combatpad" path="res://scenes/combat_trigger_pad.tscn" id="7_combat_pad"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.12, 0.25, 0.45, 1)
@@ -150,6 +152,13 @@ size = Vector3(3, 1.4, 0.8)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kill_plane"]
 size = Vector3(300, 4, 300)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bunker_platform"]
+material = SubResource("StandardMaterial3D_platform")
+size = Vector3(3.4, 1.0, 3.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bunker_platform"]
+size = Vector3(3.4, 1.0, 3.4)
 
 [node name="TestArena" type="Node3D"]
 
@@ -395,6 +404,53 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, -6)
 
 [node name="HealthPickupBig_Bridge" parent="Pickups" instance=ExtResource("5_pickup_big")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.4, -14)
+
+
+[node name="CombatTrialRange" type="Node3D" parent="."]
+
+[node name="BunkerLeft" type="StaticBody3D" parent="CombatTrialRange"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.5, 14.5)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CombatTrialRange/BunkerLeft"]
+shape = SubResource("BoxShape3D_bunker_platform")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CombatTrialRange/BunkerLeft"]
+mesh = SubResource("BoxMesh_bunker_platform")
+
+[node name="BunkerRight" type="StaticBody3D" parent="CombatTrialRange"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.5, 14.5)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CombatTrialRange/BunkerRight"]
+shape = SubResource("BoxShape3D_bunker_platform")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CombatTrialRange/BunkerRight"]
+mesh = SubResource("BoxMesh_bunker_platform")
+
+[node name="ShootingDummy_EnergyBall" parent="CombatTrialRange" instance=ExtResource("6_shooting_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1.0, 14.5)
+weapon_type = 0
+fire_interval = 1.6
+
+[node name="ShootingDummy_Missile" parent="CombatTrialRange" instance=ExtResource("6_shooting_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.0, 14.5)
+weapon_type = 1
+fire_interval = 2.8
+
+[node name="Pad_EnergyBall" parent="CombatTrialRange" node_paths=PackedStringArray("linked_dummy") instance=ExtResource("7_combat_pad")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 7.5)
+linked_dummy = NodePath("../ShootingDummy_EnergyBall")
+pad_color_inactive = Color(0.1, 0.5, 0.8, 1)
+pad_color_active = Color(1, 0.6, 0.05, 1)
+
+[node name="Pad_Missile" parent="CombatTrialRange" node_paths=PackedStringArray("linked_dummy") instance=ExtResource("7_combat_pad")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 7.5)
+linked_dummy = NodePath("../ShootingDummy_Missile")
+pad_color_inactive = Color(0.1, 0.5, 0.8, 1)
+pad_color_active = Color(1, 0.15, 0.25, 1)
 
 [node name="VRPlayer" parent="." instance=ExtResource("1_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

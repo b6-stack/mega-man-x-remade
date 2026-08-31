@@ -1,0 +1,63 @@
+[gd_scene load_steps=8 format=3 uid="uid://c8energyball"]
+
+[ext_resource type="Script" path="res://scripts/projectiles/enemy_energy_ball.gd" id="1_energyball"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ball"]
+radius = 0.18
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ball"]
+shading_mode = 0
+albedo_color = Color(1, 0.65, 0.1, 1)
+emission_enabled = true
+emission = Color(1, 0.55, 0.05, 1)
+emission_energy_multiplier = 8.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_ball"]
+material = SubResource("StandardMaterial3D_ball")
+radius = 0.12
+height = 0.24
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_tail"]
+emission_shape = 1
+emission_sphere_radius = 0.08
+direction = Vector3(0, 0, 1)
+spread = 15.0
+initial_velocity_min = 1.0
+initial_velocity_max = 2.5
+gravity = Vector3(0, 0, 0)
+scale_min = 0.5
+scale_max = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark"]
+shading_mode = 0
+albedo_color = Color(1, 0.8, 0.2, 1)
+emission_enabled = true
+emission = Color(1, 0.75, 0.1, 1)
+emission_energy_multiplier = 6.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_spark"]
+material = SubResource("StandardMaterial3D_spark")
+radius = 0.02
+height = 0.04
+
+[node name="EnemyEnergyBall" type="Area3D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_energyball")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_ball")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_ball")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.65, 0.1, 1)
+light_energy = 3.5
+omni_range = 3.0
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+amount = 18
+lifetime = 0.16
+process_material = SubResource("ParticleProcessMaterial_tail")
+draw_pass_1 = SubResource("SphereMesh_spark")
