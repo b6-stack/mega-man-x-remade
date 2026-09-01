@@ -1,10 +1,13 @@
 extends Area3D
 class_name TrackingMissile
 
-@export var speed: float = 7.5
+const IMPACT_SPLASH_SCENE: PackedScene = preload("res://scenes/effects/impact_splash.tscn")
+
+@export var speed: float = 7.8
 @export var turn_speed: float = 3.0
 @export var damage: int = 1
-@export var lifetime: float = 6.0
+@export var lifetime: float = 3.5
+@export var tracking_duration: float = 2.0
 @export var max_health: float = 1.0
 
 @onready var mesh_root: Node3D = $Visuals
@@ -15,6 +18,7 @@ var _timer: float = 0.0
 var _spawn_grace_timer: float = 0.20
 var _is_destroyed: bool = false
 var _target_player: Node3D = null
+var _can_track: bool = true
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
@@ -38,10 +42,19 @@ func _physics_process(delta: float) -> void:
 	if _spawn_grace_timer > 0.0:
 		_spawn_grace_timer -= delta
 	
+	_timer += delta
+	if _timer >= lifetime:
+		_explode()
+		return
+	
+	# Stop tracking after tracking_duration expires
+	if _timer >= tracking_duration:
+		_can_track = false
+	
 	if not _target_player or not is_instance_valid(_target_player):
 		_find_player()
 	
-	if _target_player and is_instance_valid(_target_player):
+	if _can_track and _target_player and is_instance_valid(_target_player):
 		var target_pos := _target_player.global_position
 		if _target_player is VRPlayer or _target_player.name == "VRPlayer":
 			target_pos.y += 1.1
@@ -49,21 +62,21 @@ func _physics_process(delta: float) -> void:
 		var to_target := (target_pos - global_position).normalized()
 		var current_forward := -global_transform.basis.z
 		
-		# Smoothly rotate forward (-Z) towards player
-		var new_forward := current_forward.slerp(to_target, turn_speed * delta).normalized()
-		if new_forward.length_squared() > 0.001:
-			var target_look := global_position + new_forward
-			var up_axis := Vector3.UP if abs(new_forward.y) < 0.95 else Vector3.FORWARD
-			look_at(target_look, up_axis)
+		# If the missile has flown past the player, break tracking so it doesn't circle forever
+		if _timer > 0.4 and to_target.dot(current_forward) < -0.15:
+			_can_track = false
+		else:
+			# Smoothly rotate forward (-Z) towards player
+			var new_forward := current_forward.slerp(to_target, turn_speed * delta).normalized()
+			if new_forward.length_squared() > 0.001:
+				var target_look := global_position + new_forward
+				var up_axis := Vector3.UP if abs(new_forward.y) < 0.95 else Vector3.FORWARD
+				look_at(target_look, up_axis)
 	
 	global_position += -global_transform.basis.z * speed * delta
 	
 	if mesh_root:
 		mesh_root.rotate_z(delta * 12.0)
-	
-	_timer += delta
-	if _timer >= lifetime:
-		_explode()
 
 func _on_body_entered(body: Node3D) -> void:
 	_handle_impact(body)
@@ -97,9 +110,17 @@ func _explode() -> void:
 	_is_destroyed = true
 	set_deferred("monitoring", false)
 	set_deferred("monitorable", false)
+	
+	if IMPACT_SPLASH_SCENE:
+		var splash := IMPACT_SPLASH_SCENE.instantiate()
+		var p := get_tree().current_scene if get_tree().current_scene else get_parent()
+		p.add_child(splash)
+		splash.global_position = global_position
+	
 	if mesh_root: mesh_root.visible = false
 	if light: light.visible = false
+	if exhaust_particles: exhaust_particles.emitting = false
 	
 	var tween := create_tween()
-	tween.tween_property(self, "scale", Vector3(0.01, 0.01, 0.01), 0.06)
+	tween.tween_property(self, "scale", Vector3(0.01, 0.01, 0.01), 0.04)
 	tween.tween_callback(queue_free)
