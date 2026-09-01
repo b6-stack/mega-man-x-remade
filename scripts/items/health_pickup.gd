@@ -83,7 +83,7 @@ func _collect() -> void:
 func _respawn() -> void:
 	_is_collected = false
 	visible = true
-	scale = Vector3.ZERO
+	scale = Vector3(0.01, 0.01, 0.01)
 	position.y = _base_y
 	if collision_shape:
 		collision_shape.set_deferred("disabled", false)

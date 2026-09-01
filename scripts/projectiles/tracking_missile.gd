@@ -101,5 +101,5 @@ func _explode() -> void:
 	if light: light.visible = false
 	
 	var tween := create_tween()
-	tween.tween_property(self, "scale", Vector3.ZERO, 0.06)
+	tween.tween_property(self, "scale", Vector3(0.01, 0.01, 0.01), 0.06)
 	tween.tween_callback(queue_free)
