@@ -170,10 +170,13 @@ func _physics_process(delta: float) -> void:
 		var result := space_state.intersect_ray(query)
 		if not result.is_empty() and result.collider:
 			var hit_collider: Node3D = result.collider as Node3D
-			var hit_pos: Vector3 = result.position + result.normal * 0.08
-			var hit_normal: Vector3 = result.normal
-			_process_impact(hit_collider, hit_pos, hit_normal)
-			return
+			if hit_collider is VRPlayer or (hit_collider.get_parent() and hit_collider.get_parent() is VRPlayer):
+				pass
+			else:
+				var hit_pos: Vector3 = result.position + result.normal * 0.08
+				var hit_normal: Vector3 = result.normal
+				_process_impact(hit_collider, hit_pos, hit_normal)
+				return
 
 	_prev_global_pos = global_position
 	global_position = next_pos
@@ -182,13 +185,31 @@ func _physics_process(delta: float) -> void:
 	if _lifetime <= 0.0:
 		queue_free()
 
+func _is_player_target(target: Node) -> bool:
+	if not target:
+		return false
+	if target is VRPlayer:
+		return true
+	if target.get_parent() and target.get_parent() is VRPlayer:
+		return true
+	if target.owner and target.owner is VRPlayer:
+		return true
+	return false
+
 func _on_body_entered(body: Node3D) -> void:
+	if _is_player_target(body):
+		return
 	_handle_hit_fallback(body)
 
 func _on_area_entered(area: Area3D) -> void:
+	if _is_player_target(area):
+		return
 	_handle_hit_fallback(area)
 
 func _handle_hit_fallback(target: Node3D) -> void:
+	if not is_instance_valid(target) or _is_player_target(target):
+		return
+	
 	var hit_normal: Vector3 = global_transform.basis.z
 	var hit_pos: Vector3 = _prev_global_pos + hit_normal * 0.08
 	
@@ -205,6 +226,13 @@ func _handle_hit_fallback(target: Node3D) -> void:
 	_process_impact(target, hit_pos, hit_normal)
 
 func _process_impact(target: Node3D, hit_pos: Vector3, hit_normal: Vector3) -> void:
+	if not is_instance_valid(target):
+		queue_free()
+		return
+	
+	if _is_player_target(target):
+		return
+
 	var damage_dealt := false
 	
 	var damage_target: Node = target

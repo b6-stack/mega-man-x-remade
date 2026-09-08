@@ -182,7 +182,7 @@ func heal(amount: int) -> bool:
 	_trigger_haptic(0.4, 0.12)
 	return true
 
-func take_damage(amount: int, hit_source_pos: Vector3 = Vector3.ZERO) -> void:
+func take_damage(amount: int, hit_source_pos: Vector3 = Vector3.ZERO, _hit_normal: Vector3 = Vector3.ZERO) -> void:
 	if is_dead or invincible_timer > 0.0:
 		return
 
