@@ -130,13 +130,17 @@ func _apply_controller_profile() -> void:
 
 func _init_openxr() -> void:
 	var xr_interface: XRInterface = XRServer.find_interface("OpenXR")
-	if xr_interface and xr_interface.is_initialized():
-		print("Mega Man X VR: OpenXR interface initialized successfully.")
-		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
-		get_viewport().use_xr = true
-		is_xr_active = true
-	else:
-		print("Mega Man X VR: OpenXR not found/active. Desktop preview mode.")
+	if xr_interface:
+		if not xr_interface.is_initialized():
+			xr_interface.initialize()
+		if xr_interface.is_initialized():
+			print("Mega Man X VR: OpenXR interface initialized successfully.")
+			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+			Engine.max_fps = 0
+			get_viewport().use_xr = true
+			is_xr_active = true
+			return
+	print("Mega Man X VR: OpenXR not found/active. Desktop preview mode.")
 
 func _on_controller_button_pressed(button_name: String) -> void:
 	if button_name == "menu_button" or button_name == "start_button":

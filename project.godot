@@ -25,9 +25,15 @@ enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
 
 [rendering]
 
-renderer/rendering_method="mobile"
+renderer/rendering_method="forward_plus"
+renderer/rendering_method.mobile="mobile"
 
 [xr]
 
 openxr/enabled=true
+openxr/reference_space=1
+openxr/form_factor=1
+openxr/view_configuration=1
+openxr/submit_depth_buffer=false
+openxr/startup_alert=false
 shaders/enabled=true
