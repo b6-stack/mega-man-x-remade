@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
+[display]
+
+window/size/resizable=false
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
@@ -27,12 +31,13 @@ enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
 
 renderer/rendering_method="forward_plus"
 renderer/rendering_method.mobile="mobile"
+textures/vram_compression/import_etc2_astc=true
 
 [xr]
 
 openxr/enabled=true
 openxr/reference_space=1
-openxr/form_factor=1
+openxr/form_factor=0
 openxr/view_configuration=1
 openxr/submit_depth_buffer=false
 openxr/startup_alert=false
