@@ -247,7 +247,14 @@ func die() -> void:
 	if laser_pointer:
 		laser_pointer.set_active(true)
 
+var _xr_retry_timer: float = 0.0
+
 func _process(delta: float) -> void:
+	# Retry OpenXR initialization during the first 10 seconds if handshake was deferred
+	if not is_xr_active and _xr_retry_timer < 10.0:
+		_xr_retry_timer += delta
+		_init_openxr()
+
 	# Invincibility & Electric Aura Timers
 	if invincible_timer > 0.0:
 		invincible_timer -= delta
